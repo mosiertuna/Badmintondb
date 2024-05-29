@@ -1,3 +1,9 @@
+-- Tạo cơ sở dữ liệu Badmintondb
+CREATE DATABASE Badmintondb;
+
+-- Sử dụng cơ sở dữ liệu Badmintondb
+USE Badmintondb;
+
 CREATE TABLE SHIPPERS
 (
   SHIPPER_ID SERIAL PRIMARY KEY,
