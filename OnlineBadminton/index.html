@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOPPING</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/f6430c4864.js" crossorigin="anonymous"></script>
+</head>
+<body>
+   <div id="Header" class="header">
+        <i class="fa-solid fa-cart-shopping" style="font-size: 48px; float: right; padding: 20px; transition: 0.5s;"></i>
+   </div>
+   <div id="Body">
+       <div id = "filter_menu" class = "filter_container">
+        <form>
+            <label for="Price_range">Price range:</label>
+            <select name="Price_range">
+              <option value= "0">Under 500k</option>
+              <option value= "1">500k to 1 mil</option>
+              <option value= "2">Over 1 mil</option>
+            </select>
+        </form>
+        <form>
+            <label for="Product_type">Product type:</label>
+            <select name="Product_type">
+              <option value= "1">Shorts</option>
+              <option value= "2">Shirts</option>
+              <option value= "3">Shoes</option>
+              <option value= "4">Racket</option>
+              <option value= "5">Accessories</option>
+            </select>
+        </form>
+        <form>
+            <label for="Brand_name">Brand:</label>
+            <select name="Brand_name">
+              <option value= "0">BRAND1</option>
+              <option value= "1">BRAND2</option>
+              <option value= "2">BRAND3</option>
+              <option value= "3">BRAND4</option>
+              <option value= "4">BRAND5</option>
+            </select>
+        </form>
+          <br><br>
+            <input type="submit" value="Search product">
+       </div>
+       <div id = items_list class="items_container">
+       </div>
+       <div class="page_container">
+            <button id = "prev" class="buttons">Prev</button>
+            <h1 id = "curr_page"class="page">Page 1</h1>
+            <button id = "next" class="buttons">Next</button>
+       </div>
+   </div>
+   <script src = "script.js"></script>
+</body>
