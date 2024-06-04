@@ -5,10 +5,10 @@ const port = 8081;
 const { Client } = require('pg');
 const client = new Client({
 	user: 'postgres',
-	password: '1',
+	password: '12345',
 	host: 'localhost',
 	port: '5432',
-	database: 'Store',
+	database: 'Badmintondb',
 });
 
 client.connect();
