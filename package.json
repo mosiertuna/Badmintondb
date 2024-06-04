@@ -1,13 +1,20 @@
 {
+  "name": "onlinebadminton",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-<<<<<<< HEAD
     "express": "^4.19.2",
     "pg": "^8.11.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.1"
-=======
-    "pg": "^8.11.5"
->>>>>>> 86cdc63944b0a84d3494a9dc970d2b6ba4eaa480
+    "nodemon": "^3.1.0"
   }
 }
