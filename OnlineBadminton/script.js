@@ -7,8 +7,13 @@ const per_page = 12;
 var max_page = null;
 let param = "";
 var dat = null;
+var customer = null;
+var order = null;
 updateURL("page",page);
 getData()
+document.getElementById("cart").addEventListener('click', () => {
+    window.location.href = url + "ShoppingCart/cart.html";
+})
 prevBtn.addEventListener('click', () =>{
     page--;
     updateURL("page",page);
@@ -56,7 +61,7 @@ function update_page(){
         <br>Description: ${dat[i].description}</br>
         <div class="item_quantity">
         <h3>Quantity</h3>
-        <input type="number" id="quantity" min="0" max="999" value = 0 />
+        <input type="number" id="${dat[i].product_id}" min="0" max="999" value = 0 />
         <button>Order</button>
         </div>
         </div>`;
@@ -76,7 +81,7 @@ function updateURL(key, value){
 
 
 async function getData(){
-    const res = await fetch(url + "info" + param,
+    const res = await fetch(url + "info",
         {
             method: 'GET',
             
@@ -87,5 +92,19 @@ async function getData(){
     console.log(dat);
     update_page();
         }
+/*
+async function updateCart(e){
+            const send = {
+
+            }
+            const res2 = await fetch(url + "updateCart",
+                {
+                    method: 'GET',
+                    })
+            const data = await res2.json();
+            dat = data.info;
+                }
+                */
+        
 
 
