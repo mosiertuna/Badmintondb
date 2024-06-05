@@ -18,7 +18,7 @@ app.use(express.static(__dirname));
 app.get('/info', (req, res) => {
 //TO_DO: VALIDATE INPUT, DATA LAYER PROTECTION
 
-    client.query(`SELECT * FROM public."products" OFFSET 1 `, (err, result) => {
+    client.query(`SELECT * FROM public."products" `, (err, result) => {
         if(err) console.log("error!");
         else console.log(result.rows);
         res.status(200).json({info: result.rows, maxpage: result.rowCount}); 

@@ -22,30 +22,9 @@ nextBtn.addEventListener('click', ()=>{
 
 function update_page(){
     curr_page.textContent = `Page ${page} of ${max_page}`;
-    if(page == max_page){
-        nextBtn.classList.remove("display_buttons");
-        nextBtn.classList.add("hide_buttons");
-        if(max_page == 2){
-        prevBtn.classList.add("display_buttons");
-        prevBtn.classList.remove("hide_buttons");
-        }
-        else if (max_page ==1 ){
-        prevBtn.classList.remove("display_buttons");
-        prevBtn.classList.add("hide_buttons");
-        }
-    }
-    else if(page == 1&&max_page!=1){
-        prevBtn.classList.remove("display_buttons");
-        prevBtn.classList.add("hide_buttons");
-        nextBtn.classList.add("display_buttons");
-        nextBtn.classList.remove("hide_buttons");
-    }
-    else{
-        nextBtn.classList.add("display_buttons");
-        nextBtn.classList.remove("hide_buttons");
-        prevBtn.classList.add("display_buttons");
-        prevBtn.classList.remove("hide_buttons");
-    }
+    nextBtn.classList.toggle("hide_buttons", page == max_page);
+    prevBtn.classList.toggle("hide_buttons", page == 1 || max_page == 1);
+    prevBtn.classList.toggle("display_buttons", page != 1 && max_page != 1);
 
     document.getElementById("items_list").innerHTML="";
 
