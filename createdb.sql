@@ -470,3 +470,54 @@ INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
 ('Voucher FFF', '2024-10-01', '2024-10-31', 25, 200, 35),
 ('Voucher GGG', '2024-11-01', '2024-11-30', 30, 150, 40),
 ('Voucher HHH', '2024-12-01', '2024-12-31', 35, 250, 50);
+
+
+-- Inserting more data into the CITIES table
+INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
+
+(1,'Hồ Chí Minh'),
+(2,'Đà Nẵng'),
+(3,'Hải Phòng'),
+(4,'Cần Thơ'),
+(5,'Hải Dương'),
+(6, 'Hà Nội');
+
+-- Inserting more data into the ADDRESSES table
+INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
+('Số 10, Đường Trần Hưng Đạo', 'Quận 1', 1, '700000'),
+('25 Lê Duẩn', 'Quận Hải Châu', 2, '550000'),
+('123 Lê Lợi', 'Quận Ngô Quyền', 3, '410000'),
+('456 Cách Mạng Tháng 8', 'Quận Ninh Kiều', 4, '900000'),
+('789 Lê Thánh Tôn', 'Quận Ngô Quyền', 3, '420000');
+
+-- Inserting more data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
+('Trần Thị Mai', '0901234567', 'tranmai@example.com', 2),
+('Lê Văn Nam', '0912345678', 'lennam@example.com', 3),
+('Nguyễn Thị Hương', '0923456789', 'huongnguyen@example.com', 1),
+('Phạm Văn Đức', '0934567890', 'phamduc@example.com', 4),
+('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5);
+
+-- Inserting more data into the CITIES table
+INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
+(7,'Nha Trang'),
+(8,'Vũng Tàu'),
+(9,'Huế'),
+(10,'Hà Giang'),
+(11,'Bắc Ninh');
+
+-- Inserting more data into the ADDRESSES table
+INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
+('Số 20, Đường Lê Lai', 'Quận 2', 6, '800000'),
+('54 Lê Lợi', 'Quận Thanh Khê', 7, '450000'),
+('321 Lê Hồng Phong', 'Quận Lê Chân', 8, '350000'),
+('789 Lê Lai', 'Quận Ninh Kiều', 9, '950000'),
+('456 Lê Hồng Phong', 'Quận Hồng Bàng', 10, '460000');
+
+-- Inserting more data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
+('Trần Văn Bình', '0987654321', 'binhtran@example.com', 6),
+('Nguyễn Thị Lan', '0976543210', 'lannguyen@example.com', 7),
+('Lê Văn Hòa', '0965432109', 'hoale@example.com', 8),
+('Phạm Thị Hà', '0954321098', 'hapham@example.com', 9),
+('Hoàng Minh Tuấn', '0943210987', 'tuantu@example.com', 10);
