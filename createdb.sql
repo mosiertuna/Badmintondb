@@ -1,10 +1,3 @@
--- Tạo cơ sở dữ liệu Badmintondb
-CREATE DATABASE Badmintondb;
-
--- Sử dụng cơ sở dữ liệu Badmintondb
-USE Badmintondb;
-
-
 
 CREATE TABLE SHIPPERS
 (
@@ -16,34 +9,37 @@ CREATE TABLE SHIPPERS
   CHECK(STATUS >= 0 AND STATUS <= 3)
 );
 
-CREATE TABLE CUSTOMERS
-(
-  CUSTOMER_ID SERIAL PRIMARY KEY,
-  FULL_NAME VARCHAR(40) NOT NULL,
-  PHONE VARCHAR(10) NOT NULL,
-  EMAIL VARCHAR(100) ,
-  FOREIGN KEY (ADDRESS_ID) REFERENCES ADDRESSES(ADDRESS_ID)
-);
-
-CREATE TABLE ADDRESSES
-(
-  ADDRESS_ID SERIAL PRIMARY KEY,
-  ADDRESS VARCHAR(50) NOT NULL
-  DISTRICT VARCHAR(30) NOT NULL,
-  FOREIGN KEY (CITY_ID) REFERENCES CITIES(CITY_ID),
-  POSTAL_CODE VARCHAR(10) NOT NULL,
-);
-
 CREATE TABLE CITIES
 (
   CITY_ID SERIAL PRIMARY KEY,
   CITY_NAME VARCHAR(30) NOT NULL
 );
 
+CREATE TABLE ADDRESSES
+(
+  ADDRESS_ID SERIAL PRIMARY KEY,
+  ADDRESS VARCHAR(50) NOT NULL,
+  DISTRICT VARCHAR(30) NOT NULL,
+  CITY_ID SERIAL,
+  FOREIGN KEY (CITY_ID) REFERENCES CITIES(CITY_ID),
+  POSTAL_CODE VARCHAR(10) NOT NULL
+);
+
+
+CREATE TABLE CUSTOMERS
+(
+  CUSTOMER_ID SERIAL PRIMARY KEY,
+  FULL_NAME VARCHAR(40) ,
+  PHONE VARCHAR(10) ,
+  EMAIL VARCHAR(100) ,
+  ADDRESS_ID SERIAL,
+  FOREIGN KEY (ADDRESS_ID) REFERENCES ADDRESSES(ADDRESS_ID)
+);
+
 CREATE TABLE PRODUCTS
 (
   PRODUCT_ID SERIAL PRIMARY KEY,
-  NAME VARCHAR(10000) NOT NULL,
+  PRODUCT_NAME VARCHAR(10000) NOT NULL,
   UNIT_PRICE MONEY NOT NULL,
   AMOUNT INT NOT NULL,
   TYPE INT NOT NULL,
@@ -84,7 +80,6 @@ CREATE TABLE LIST
   QUANTITY INT NOT NULL,
   PRODUCT_ID INT NOT NULL,
   ORDER_ID INT NOT NULL,
-  PRIMARY KEY (PRODUCT_ID, ORDER_ID),
   FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(PRODUCT_ID),
   FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID),
   CHECK(QUANTITY >= 0)
@@ -94,6 +89,7 @@ CREATE TABLE DISCOUNT
 (
   ORDER_ID INT NOT NULL,
   VOUCHER_ID INT NOT NULL,
+  PRIMARY KEY (ORDER_ID, VOUCHER_ID),
   FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID),
   FOREIGN KEY (VOUCHER_ID) REFERENCES VOUCHERS(VOUCHER_ID)
 );
@@ -118,20 +114,11 @@ VALUES
   ('Kawasaki'),
   ('Adidas');
 
--- Cập nhật brand_id từng loại thương hiệu từ 1 đến 10
-UPDATE PRODUCTS_BRAND
-SET BRAND_ID = new_brand_id
-FROM (
-  SELECT
-    BRAND_NAME,
-    ROW_NUMBER() OVER (ORDER BY BRAND_NAME) AS new_brand_id
-  FROM PRODUCTS_BRAND
-) AS temp
-WHERE PRODUCTS_BRAND.BRAND_NAME = temp.BRAND_NAME;
+
 
 
 -- Tạo dữ liệu mẫu cho bảng PRODUCTS
-INSERT INTO PRODUCTS (NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
+INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Vợt Cầu Lông 
   ('Vợt Cầu Lông Yonex Astrox 88D', 3500.00, 20, 0, 10, 'Vợt cầu lông cao cấp, chất lượng tốt, phù hợp cho người chơi trình độ cao.'),
@@ -155,7 +142,7 @@ VALUES
   ('Quần Cầu Lông Apacs AP-301', 480.00, 44, 2, 2, 'Quần cầu lông với chất liệu co giãn, phù hợp cho mọi hoạt động.');
 
 -- Tạo dữ liệu mẫu cho bảng PRODUCTS
-INSERT INTO PRODUCTS (NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
+INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Vợt Cầu Lông (tiếp tục)
   ('Vợt Cầu Lông VNB Supreme 1000', 2900.00, 17, 0, 9, 'Vợt cầu lông với thiết kế đẹp mắt, độ bền và hiệu suất tốt.'),
@@ -188,7 +175,7 @@ VALUES
   ('Bộ Quần Áo Cầu Lông Adidas A100', 620.00, 33, 2, 1, 'Bộ quần áo cầu lông với công nghệ hiện đại, tăng hiệu suất vận động.');
 
 -- Tạo dữ liệu mẫu cho bảng PRODUCTS
-INSERT INTO PRODUCTS (NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
+INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Phụ Kiện Cầu Lông
   ('Bao Tay Cầu Lông Yonex AC133', 150.00, 60, 3, 10, 'Bao tay cầu lông chất lượng, giúp tăng độ ma sát khi cầm vợt.'),
@@ -227,7 +214,7 @@ VALUES
   ('Bóng Cầu Lông Adidas AD-BL01', 145.00, 210, 5, 1, 'Bóng cầu lông chất lượng cao, độ bền cao, giúp tăng hiệu suất chơi.');
 
 -- Tạo dữ liệu mẫu cho bảng PRODUCTS
-INSERT INTO PRODUCTS (NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
+INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Vợt Cầu Lông
   ('Vợt Cầu Lông Yonex Astrox 88D', 3500.00, 20, 0, 10, 'Vợt cầu lông cao cấp, chất lượng tốt, phù hợp cho người chơi trình độ cao.'),
@@ -346,7 +333,7 @@ VALUES
 
 
   -- Tạo dữ liệu mẫu cho bảng PRODUCTS
-INSERT INTO PRODUCTS (NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
+INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Vợt Cầu Lông
   ('Vợt Cầu Lông Yonex Astrox 100ZZ', 3800.00, 22, 0, 10, 'Vợt cầu lông cao cấp, công nghệ hiện đại, độ bền và hiệu suất tối ưu.'),
@@ -419,4 +406,67 @@ VALUES
   ('Dây Cầu Lông Apacs AP-DY02', 130.00, 65, 3, 2, 'Dây cầu lông chất lượng, độ bền cao, dễ dàng thay thế.'),
   ('Bao Tay Cầu Lông Kawasaki KG-202', 170.00, 52, 3, 3, 'Bao tay cầu lông với chất liệu cao cấp, tăng độ ma sát khi cầm vợt.'),
   ('Băng Cổ Tay Cầu Lông Kumpoo KW-002', 95.00, 70, 3, 4, 'Băng cổ tay hỗ trợ và bảo vệ cổ tay, giúp người chơi thoải mái.'),
-  ('Tất Cầu Lông Proace ST-101', 65.00, 80, 3, 7, 'Tất cầu lông thoáng khí, hút ẩm tốt, mang lại cảm giác thoải mái.'),
+  ('Tất Cầu Lông Proace ST-101', 65.00, 80, 3, 7, 'Tất cầu lông thoáng khí, hút ẩm tốt, mang lại cảm giác thoải mái.');
+
+--vouchers
+INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID) VALUES
+('Voucher A', '2024-01-01', '2024-01-31', 20, 100, 2),
+('Voucher B', '2024-02-01', '2024-02-28', 15, 200, 5),
+('Voucher C', '2024-03-01', '2024-03-31', 25, 150, 10),
+('Voucher D', '2024-04-01', '2024-04-30', 30, 300, 12),
+('Voucher E', '2024-05-01', '2024-05-31', 35, 250, 20),
+('Voucher F', '2024-06-01', '2024-06-30', 40, 400, 22),
+('Voucher G', '2024-07-01', '2024-07-31', 45, 350, 30),
+('Voucher H', '2024-08-01', '2024-08-31', 50, 500, 35),
+('Voucher I', '2024-09-01', '2024-09-30', 55, 450, 40),
+('Voucher J', '2024-10-01', '2024-10-31', 60, 600, 50),
+('Voucher K', '2024-11-01', '2024-11-30', 20, 100, 60),
+('Voucher L', '2024-12-01', '2024-12-31', 25, 200, 70),
+('Voucher M', '2024-01-01', '2024-01-31', 30, 150, 80),
+('Voucher N', '2024-02-01', '2024-02-28', 35, 250, 90),
+('Voucher O', '2024-03-01', '2024-03-31', 40, 300, 100),
+('Voucher P', '2024-04-01', '2024-04-30', 45, 350, 110),
+('Voucher Q', '2024-05-01', '2024-05-31', 50, 400, 120),
+('Voucher R', '2024-06-01', '2024-06-30', 55, 450, 130),
+('Voucher S', '2024-07-01', '2024-07-31', 60, 500, 140),
+('Voucher T', '2024-08-01', '2024-08-31', 65, 550, 150),
+('Voucher U', '2024-09-01', '2024-09-30', 20, 100, 160),
+('Voucher V', '2024-10-01', '2024-10-31', 25, 200, 170),
+('Voucher W', '2024-11-01', '2024-11-30', 30, 150, 180),
+('Voucher X', '2024-12-01', '2024-12-31', 35, 250, 190),
+('Voucher Y', '2024-01-01', '2024-01-31', 40, 300, 200),
+('Voucher Z', '2024-02-01', '2024-02-28', 45, 350, 2),
+('Voucher AA', '2024-03-01', '2024-03-31', 50, 400, 5),
+('Voucher BB', '2024-04-01', '2024-04-30', 55, 450, 10),
+('Voucher CC', '2024-05-01', '2024-05-31', 60, 500, 12),
+('Voucher DD', '2024-06-01', '2024-06-30', 20, 100, 20),
+('Voucher EE', '2024-07-01', '2024-07-31', 25, 200, 22),
+('Voucher FF', '2024-08-01', '2024-08-31', 30, 150, 30),
+('Voucher GG', '2024-09-01', '2024-09-30', 35, 250, 35),
+('Voucher HH', '2024-10-01', '2024-10-31', 40, 300, 40),
+('Voucher II', '2024-11-01', '2024-11-30', 45, 350, 50),
+('Voucher JJ', '2024-12-01', '2024-12-31', 50, 400, 60),
+('Voucher KK', '2024-01-01', '2024-01-31', 55, 450, 70),
+('Voucher LL', '2024-02-01', '2024-02-28', 60, 500, 80),
+('Voucher MM', '2024-03-01', '2024-03-31', 20, 100, 90),
+('Voucher NN', '2024-04-01', '2024-04-30', 25, 200, 100),
+('Voucher OO', '2024-05-01', '2024-05-31', 30, 150, 110),
+('Voucher PP', '2024-06-01', '2024-06-30', 35, 250, 120),
+('Voucher QQ', '2024-07-01', '2024-07-31', 40, 300, 130),
+('Voucher RR', '2024-08-01', '2024-08-31', 45, 350, 140),
+('Voucher SS', '2024-09-01', '2024-09-30', 50, 400, 150),
+('Voucher TT', '2024-10-01', '2024-10-31', 55, 450, 160),
+('Voucher UU', '2024-11-01', '2024-11-30', 60, 500, 170),
+('Voucher VV', '2024-12-01', '2024-12-31', 20, 100, 180),
+('Voucher WW', '2024-01-01', '2024-01-31', 25, 200, 190),
+('Voucher XX', '2024-02-01', '2024-02-28', 30, 150, 200),
+('Voucher YY', '2024-03-01', '2024-03-31', 35, 250, 2),
+('Voucher ZZ', '2024-04-01', '2024-04-30', 40, 300, 5),
+('Voucher AAA', '2024-05-01', '2024-05-31', 45, 350, 10),
+('Voucher BBB', '2024-06-01', '2024-06-30', 50, 400, 12),
+('Voucher CCC', '2024-07-01', '2024-07-31', 55, 450, 20),
+('Voucher DDD', '2024-08-01', '2024-08-31', 60, 500, 22),
+('Voucher EEE', '2024-09-01', '2024-09-30', 20, 100, 30),
+('Voucher FFF', '2024-10-01', '2024-10-31', 25, 200, 35),
+('Voucher GGG', '2024-11-01', '2024-11-30', 30, 150, 40),
+('Voucher HHH', '2024-12-01', '2024-12-31', 35, 250, 50);

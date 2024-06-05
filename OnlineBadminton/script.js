@@ -51,7 +51,7 @@ function update_page(){
 
     for(i = per_page*page - per_page; i<per_page*page&&i<dat.length; ++i){
         document.getElementById("items_list").innerHTML += `<div class="items">ID: ${dat[i].product_id}
-        <br>Name: ${dat[i].name}</br>
+        <br>Name: ${dat[i].product_name}</br>
         <br>Unit price: ${dat[i].unit_price}</br>
         <br>Description: ${dat[i].description}</br>
         <div class="item_quantity">
