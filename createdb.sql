@@ -85,14 +85,6 @@ CREATE TABLE LIST
   CHECK(QUANTITY >= 0)
 );
 
-CREATE TABLE DISCOUNT
-(
-  ORDER_ID INT NOT NULL,
-  VOUCHER_ID INT NOT NULL,
-  PRIMARY KEY (ORDER_ID, VOUCHER_ID),
-  FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID),
-  FOREIGN KEY (VOUCHER_ID) REFERENCES VOUCHERS(VOUCHER_ID)
-);
 
 CREATE TABLE PRODUCTS_BRAND
 (
@@ -103,16 +95,16 @@ CREATE TABLE PRODUCTS_BRAND
 
 INSERT INTO PRODUCTS_BRAND (BRAND_NAME)
 VALUES
-  ('Yonex'),
-  ('Victor'),
+  ('Adidas'),
+  ('Apacs'),
+  ('Kawasaki'),
+  ('Kumpoo'),
   ('Lining'),
   ('Mizuno'),
-  ('Apacs'),
-  ('VNB'),
   ('Proace'),
-  ('Kumpoo'),
-  ('Kawasaki'),
-  ('Adidas');
+  ('Victor'),
+  ('VNB'),
+  ('Yonex');
 
 
 
@@ -521,3 +513,8 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
 ('Lê Văn Hòa', '0965432109', 'hoale@example.com', 8),
 ('Phạm Thị Hà', '0954321098', 'hapham@example.com', 9),
 ('Hoàng Minh Tuấn', '0943210987', 'tuantu@example.com', 10);
+
+
+
+
+

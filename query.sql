@@ -1,22 +1,37 @@
---tìm sản phẩm theo tên--
-DO
-$$
-DECLARE ProductName VARCHAR(10000);
+--hàm tìm sản phẩm theo tên--
+CREATE OR REPLACE FUNCTION search_product(p_name VARCHAR)
+RETURNS TABLE (
+  PRODUCT_ID INT,
+  PRODUCT_NAME VARCHAR(10000),
+  UNIT_PRICE MONEY,
+  AMOUNT INT,
+  TYPE  INT,
+  BRAND_NAME VARCHAR(30),
+  DESCRIPTION VARCHAR(10000000)
+) AS $$
 BEGIN
-  ProductName := 'Tên sản phẩm cần tìm';
-  EXECUTE format('SELECT * FROM PRODUCTS WHERE NAME LIKE ''%%%s%%''', ProductName);
-END
-$$
+  RETURN QUERY EXECUTE format('
+    SELECT 
+      PRODUCTS.PRODUCT_ID, 
+      PRODUCTS.PRODUCT_NAME, 
+      PRODUCTS.UNIT_PRICE, 
+      PRODUCTS.AMOUNT, 
+      PRODUCTS.TYPE, 
+      PRODUCTS_BRAND.BRAND_NAME, 
+      PRODUCTS.DESCRIPTION 
+    FROM PRODUCTS 
+    JOIN PRODUCTS_BRAND ON PRODUCTS.BRAND_ID = PRODUCTS_BRAND.BRAND_ID
+    WHERE PRODUCTS.PRODUCT_NAME LIKE ''%%%s%%''', p_name);
+END;
+$$ LANGUAGE plpgsql;
+--cau lenh tìm sản phẩm theo tên--
+SELECT * FROM search_product('Yonex');
+
+
 
 --tìm sản phẩm theo giá--
-SELECT * FROM PRODUCTS WHERE PRICE BETWEEN 1000000 AND 2000000;
-
---đặt hàng 1 sản phẩm--
-INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, CUSTOMER_ID)
-VALUES 
-  (1, 2, 123), -- Sản phẩm 1 với số lượng 2 cho khách hàng 123
-  (2, 1, 123), -- Sản phẩm 2 với số lượng 1 cho khách hàng 123
-  (3, 5, 123); -- Sản phẩm 3 với số lượng 5 cho khách hàng 123
+SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN 1000::MONEY AND 2000::MONEY;
+--vi dụ tìm sản phẩm có giá từ 1000 đến 2000--
 
 
 --tra cứu đơn hàng theo tên khách hàng-- (cả shipper và khách hàng đều dùng được)
@@ -27,27 +42,131 @@ WHERE CUSTOMERS.FULL_NAME = 'Tên Khách Hàng';
 
 
 --tra cứu tất cả sản phẩm theo tên brand nhập vào--
-SELECT PRODUCTS.NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
-FROM PRODUCTS 
-JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID 
-WHERE products_brand.BRAND_NAME = 'Yonex';
+DROP FUNCTION IF EXISTS select_product_brand;
+
+CREATE OR REPLACE FUNCTION select_product_brand(p_brand_name VARCHAR)
+RETURNS TABLE (
+  PRODUCT_NAME VARCHAR(10000),
+  amount INT,
+  UNIT_PRICE MONEY,
+  BRAND_NAME VARCHAR(30),
+  DESCRIPTION VARCHAR(10000000)
+) AS $$
+BEGIN
+  RETURN QUERY 
+  SELECT PRODUCTS.PRODUCT_NAME,PRODUCTS.AMOUNT, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
+  FROM PRODUCTS 
+  JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID 
+  WHERE products_brand.BRAND_NAME = p_brand_name;
+END;
+$$ LANGUAGE plpgsql;
+--câu lệnh ví dụ--
+SELECT * FROM select_product_brand('Yonex');
+
+
+
 
 --tra cứu theo loại sản phẩm--
-SELECT PRODUCTS.NAME, PRODUCTS.UNIT_PRICE, PRODUCTS.AMOUNT, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
-FROM PRODUCTS 
-JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID
-WHERE PRODUCTS.TYPE = 1;
+CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
+RETURNS TABLE (
+  PRODUCT_NAME VARCHAR(10000),
+  UNIT_PRICE MONEY,
+  AMOUNT INT,
+  BRAND_NAME VARCHAR(30),
+  DESCRIPTION VARCHAR(10000000)
+) AS $$
+BEGIN
+  RETURN QUERY 
+  SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, PRODUCTS.AMOUNT, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
+  FROM PRODUCTS 
+  JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID 
+  WHERE PRODUCTS.TYPE = p_type;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM search_product_type(2);
+
 
 
 --tra cứu thông tin khách hàng của 1 đơn hàng cụ thể--
-SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, CUSTOMERS.ADDRESS
+SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, ADDRESSES.ADDRESS, ADDRESSES.DISTRICT, CITIES.CITY_NAME
 FROM ORDERS
 JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID
-WHERE ORDERS.ORDER_ID = '26261616';
+JOIN ADDRESSES ON CUSTOMERS.ADDRESS_ID = ADDRESSES.ADDRESS_ID
+JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
+WHERE ORDERS.ORDER_ID = 26261616;
+
+--tra cứu thông tin sản phẩm của 1 đơn hàng cụ thể--
+SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, LIST.QUANTITY, 
+       (PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS TOTAL_PRICE
+FROM LIST
+JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
+WHERE LIST.ORDER_ID = 24325232;
+--và tính ra tổng tiền của đơn hàng đó--
+SELECT SUM(PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS ORDER_TOTAL
+FROM LIST
+JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
+WHERE LIST.ORDER_ID = 24325232;
+
+--giá trị được giảm--
+SELECT LIST.PRODUCT_ID, PRODUCTS.PRODUCT_NAME, 
+       (VOUCHERS.PERCENT_OFF * PRODUCTS.UNIT_PRICE * LIST.QUANTITY / 100) AS DISCOUNT_AMOUNT
+FROM LIST
+JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
+LEFT JOIN VOUCHERS ON PRODUCTS.PRODUCT_ID = VOUCHERS.PRODUCT_ID
+WHERE LIST.ORDER_ID = 24325232 AND CURRENT_DATE BETWEEN VOUCHERS.DAY_START AND VOUCHERS.DAY_OFF;
+
+--tính tổng tiền cuối cùng của đơn hàng--
+SELECT (SUM(CAST(PRODUCTS.UNIT_PRICE AS numeric) * LIST.QUANTITY) - 
+        COALESCE(SUM(CAST(VOUCHERS.PERCENT_OFF AS numeric) * CAST(PRODUCTS.UNIT_PRICE AS numeric) * LIST.QUANTITY / 100), 0)) AS FINAL_TOTAL
+FROM LIST
+JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
+LEFT JOIN VOUCHERS ON PRODUCTS.PRODUCT_ID = VOUCHERS.PRODUCT_ID AND CURRENT_DATE BETWEEN VOUCHERS.DAY_START AND VOUCHERS.DAY_OFF
+WHERE LIST.ORDER_ID = 24325232;
+
+
+
+--duyệt các sản phẩm trong list đã sử dụng voucher và tự động -1 amount của voucher--
+CREATE OR REPLACE FUNCTION decrease_voucher_amount() RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM VOUCHERS WHERE PRODUCT_ID = NEW.PRODUCT_ID) THEN
+    UPDATE VOUCHERS
+    SET AMOUNT = AMOUNT - 1
+    WHERE PRODUCT_ID = NEW.PRODUCT_ID;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER decrease_voucher_amount_after_order
+AFTER INSERT ON LIST
+FOR EACH ROW EXECUTE PROCEDURE decrease_voucher_amount();
+
 
 --tạo 1 khách hàng mới--   
-INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS)
-VALUES ('Tên Khách Hàng', '020161', 'Email', 'Địa Chỉ');
+CREATE OR REPLACE FUNCTION add_customer(
+    p_full_name VARCHAR(40),
+    p_phone VARCHAR(10),
+    p_email VARCHAR(100),
+    p_address VARCHAR(50),
+    p_district VARCHAR(30),
+    p_city_id INT,
+    p_postal_code VARCHAR(10)
+) RETURNS VOID AS $$
+BEGIN
+    -- Thêm một địa chỉ mới
+    INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE)
+    VALUES (p_address, p_district, p_city_id, p_postal_code);
+
+    -- Thêm một khách hàng mới với ADDRESS_ID mới nhất
+    INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID)
+    VALUES (p_full_name, p_phone, p_email, currval('addresses_address_id_seq'));
+END;
+$$ LANGUAGE plpgsql;
+
+select * from add_customer('Nguyễn Văn A','0123456789','maiojsnd@gmail.com','123 Đường 1','Quận 1',1,'700000');
+
+
 
 --tạo 1 vouchers mới--
 INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
@@ -145,6 +264,15 @@ WHERE status = 3
   AND time >= '2024-06-01' AND time < '2024-06-30';
   
 
+
+
+
+--đặt hàng 1 sản phẩm--
+INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, CUSTOMER_ID)
+VALUES 
+  (1, 2, 123), -- Sản phẩm 1 với số lượng 2 cho khách hàng 123
+  (2, 1, 123), -- Sản phẩm 2 với số lượng 1 cho khách hàng 123
+  (3, 5, 123); -- Sản phẩm 3 với số lượng 5 cho khách hàng 123
 
 
 --Tìm shippers có tổng số đơn giao hoàn thành trong mỗi tháng(khen thưởng)--
