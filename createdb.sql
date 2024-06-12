@@ -465,15 +465,72 @@ INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
 ('Voucher HHH', '2024-12-01', '2024-12-31', 35, 250, 50);
 
 
--- Inserting more data into the CITIES table
+-- Inserting  data into the CITIES table
 INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
+(1, 'Hồ Chí Minh'),
+(2, 'Đà Nẵng'),
+(3, 'Hải Phòng'),
+(4, 'Cần Thơ'),
+(5, 'Hải Dương'),
+(6, 'Hà Nội'),
+(7, 'Nha Trang'),
+(8, 'Vũng Tàu'),
+(9, 'Huế'),
+(10, 'Hà Giang'),
+(11, 'Bắc Ninh'),
+(12, 'Đà Lạt'),
+(13, 'Quy Nhơn'),
+(14, 'Buôn Ma Thuột'),
+(15, 'Thái Nguyên'),
+(16, 'Vinh'),
+(17, 'Tam Kỳ'),
+(18, 'Pleiku'),
+(19, 'Bạc Liêu'),
+(20, 'Vĩnh Yên'),
+(21, 'Cà Mau'),
+(22, 'Lào Cai'),
+(23, 'Thanh Hóa'),
+(24, 'Quảng Ngãi'),
+(25, 'Ninh Bình'),
+(26, 'Vĩnh Long'),
+(27, 'Đồng Hới'),
+(28, 'Bắc Giang'),
+(29, 'Hạ Long'),
+(30, 'Tây Ninh'),
+(31, 'Bến Tre'),
+(32, 'Biên Hòa'),
+(33, 'Cao Lãnh'),
+(34, 'Điện Biên Phủ'),
+(35, 'Hòa Bình'),
+(36, 'Hưng Yên'),
+(37, 'Kon Tum'),
+(38, 'Lạng Sơn'),
+(39, 'Lào Cai'),
+(40, 'Long Xuyên'),
+(41, 'Móng Cái'),
+(42, 'Nam Định'),
+(43, 'Phan Rang - Tháp Chàm'),
+(44, 'Phan Thiết'),
+(45, 'Rạch Giá'),
+(46, 'Sơn La'),
+(47, 'Tân An'),
+(48, 'Thái Bình'),
+(49, 'Tuyên Quang'),
+(50, 'Tuy Hòa'),
+(51, 'Uông Bí'),
+(52, 'Việt Trì'),
+(53, 'Vĩnh Long'),
+(54, 'Yên Bái'),
+(55, 'Thủ Dầu Một'),
+(56, 'Sa Đéc'),
+(57, 'Bắc Kạn'),
+(58, 'Thái Nguyên'),
+(59, 'Hưng Yên'),
+(60, 'Phủ Lý'),
+(61, 'Bình Định'),
+(62, 'Phú Quốc'),
+(63, 'Hội An');
 
-(1,'Hồ Chí Minh'),
-(2,'Đà Nẵng'),
-(3,'Hải Phòng'),
-(4,'Cần Thơ'),
-(5,'Hải Dương'),
-(6, 'Hà Nội');
 
 -- Inserting more data into the ADDRESSES table
 INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
@@ -481,8 +538,15 @@ INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
 ('25 Lê Duẩn', 'Quận Hải Châu', 2, '550000'),
 ('123 Lê Lợi', 'Quận Ngô Quyền', 3, '410000'),
 ('456 Cách Mạng Tháng 8', 'Quận Ninh Kiều', 4, '900000'),
-('789 Lê Thánh Tôn', 'Quận Ngô Quyền', 3, '420000');
+('789 Lê Thánh Tôn', 'Quận Ngô Quyền', 3, '420000'),
+('Số 20, Đường Lê Lai', 'Quận 2', 6, '800000'),
+('54 Lê Lợi', 'Quận Thanh Khê', 7, '450000'),
+('321 Lê Hồng Phong', 'Quận Lê Chân', 8, '350000'),
+('789 Lê Lai', 'Quận Ninh Kiều', 9, '950000'),
+('456 Lê Hồng Phong', 'Quận Hồng Bàng', 10, '460000');
 
+
+<<<<<<< HEAD
 -- Inserting more data into the CITIES table
 INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
 (7,'Nha Trang'),
@@ -511,6 +575,22 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, PASS_WORD, EMAIL, ADDRESS_ID) VALUES
 ('Lê Văn Hòa', '0965432109', 'password8', 'hoale@example.com', 8),
 ('Phạm Thị Hà', '0954321098', 'password9', 'hapham@example.com', 9),
 ('Hoàng Minh Tuấn', '0943210987', 'passwords', 'tuantu@example.com', 10);
+=======
+-- Inserting more data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
+('Trần Thị Mai', '0901234567', 'tranmai@example.com', 2),
+('Lê Văn Nam', '0912345678', 'lennam@example.com', 3),
+('Nguyễn Thị Hương', '0923456789', 'huongnguyen@example.com', 1),
+('Phạm Văn Đức', '0934567890', 'phamduc@example.com', 4),
+('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5),
+('Trần Văn Bình', '0987654321', 'binhtran@example.com', 6),
+('Nguyễn Thị Lan', '0976543210', 'lannguyen@example.com', 7),
+('Lê Văn Hòa', '0965432109', 'hoale@example.com', 8),
+('Phạm Thị Hà', '0954321098', 'hapham@example.com', 9),
+('Hoàng Minh Tuấn', '0943210987', 'tuantu@example.com', 10);
+
+
+>>>>>>> 83cde2508a2888d29d8cafefe5daac83daa34764
 
 
 
