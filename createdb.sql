@@ -546,15 +546,6 @@ INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
 ('456 Lê Hồng Phong', 'Quận Hồng Bàng', 10, '460000');
 
 
-<<<<<<< HEAD
--- Inserting more data into the CITIES table
-INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
-(7,'Nha Trang'),
-(8,'Vũng Tàu'),
-(9,'Huế'),
-(10,'Hà Giang'),
-(11,'Bắc Ninh');
-
 -- Inserting more data into the ADDRESSES table
 INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
 ('Số 20, Đường Lê Lai', 'Quận 2', 6, '800000'),
@@ -575,7 +566,7 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, PASS_WORD, EMAIL, ADDRESS_ID) VALUES
 ('Lê Văn Hòa', '0965432109', 'password8', 'hoale@example.com', 8),
 ('Phạm Thị Hà', '0954321098', 'password9', 'hapham@example.com', 9),
 ('Hoàng Minh Tuấn', '0943210987', 'passwords', 'tuantu@example.com', 10);
-=======
+
 -- Inserting more data into the CUSTOMERS table
 INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
 ('Trần Thị Mai', '0901234567', 'tranmai@example.com', 2),
@@ -589,8 +580,6 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
 ('Phạm Thị Hà', '0954321098', 'hapham@example.com', 9),
 ('Hoàng Minh Tuấn', '0943210987', 'tuantu@example.com', 10);
 
-
->>>>>>> 83cde2508a2888d29d8cafefe5daac83daa34764
 
 
 
