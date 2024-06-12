@@ -1,3 +1,4 @@
+--cau 1--
 --hàm tìm sản phẩm theo tên--
 CREATE OR REPLACE FUNCTION search_product(p_name VARCHAR)
 RETURNS TABLE (
@@ -28,19 +29,20 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM search_product('Yonex');
 
 
-
+--cau 2--
 --tìm sản phẩm theo giá--
 SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN 1000::MONEY AND 2000::MONEY;
 --vi dụ tìm sản phẩm có giá từ 1000 đến 2000--
 
 
+--cau 3--
 --tra cứu đơn hàng theo tên khách hàng-- (cả shipper và khách hàng đều dùng được)
 SELECT ORDERS.ORDER_ID, ORDERS.TIME, ORDERS.TOTAL_PRICE, ORDERS.ADDRESS, ORDERS.STATUS
 FROM ORDERS 
 JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID 
 WHERE CUSTOMERS.FULL_NAME = 'Tên Khách Hàng';
 
-
+--cau 4--
 --tra cứu tất cả sản phẩm theo tên brand nhập vào--
 DROP FUNCTION IF EXISTS select_product_brand;
 
@@ -65,7 +67,7 @@ SELECT * FROM select_product_brand('Yonex');
 
 
 
-
+--cau 5--
 --tra cứu theo loại sản phẩm--
 CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
 RETURNS TABLE (
@@ -88,6 +90,7 @@ SELECT * FROM search_product_type(2);
 
 
 
+--cau 6--
 --tra cứu thông tin khách hàng của 1 đơn hàng cụ thể--
 SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, ADDRESSES.ADDRESS, ADDRESSES.DISTRICT, CITIES.CITY_NAME
 FROM ORDERS
@@ -96,12 +99,18 @@ JOIN ADDRESSES ON CUSTOMERS.ADDRESS_ID = ADDRESSES.ADDRESS_ID
 JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
 WHERE ORDERS.ORDER_ID = 26261616;
 
+
+
+--cau 7--
 --tra cứu thông tin sản phẩm của 1 đơn hàng cụ thể--
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, LIST.QUANTITY, 
        (PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS TOTAL_PRICE
 FROM LIST
 JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
 WHERE LIST.ORDER_ID = 24325232;
+
+
+
 --và tính ra tổng tiền của đơn hàng đó--
 SELECT SUM(PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS ORDER_TOTAL
 FROM LIST

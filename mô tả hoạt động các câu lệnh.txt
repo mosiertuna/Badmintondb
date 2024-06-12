@@ -1,0 +1,24 @@
+Câu 1:
+Hàm search_product này được tạo ra với mục đích tìm kiếm sản phẩm theo tên. Hàm này nhận vào một tham số p_name, đại diện cho tên sản phẩm cần tìm kiếm.
+
+Hàm trả về một bảng với các cột sau: PRODUCT_ID, PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_NAME, và DESCRIPTION.
+
+Dưới đây là cách hàm này hoạt động:
+
+Hàm sẽ thực thi một câu truy vấn SQL được tạo ra từ hàm format. Câu truy vấn này sẽ trả về các thông tin về sản phẩm từ bảng PRODUCTS và PRODUCTS_BRAND.
+
+Câu truy vấn sẽ lấy các cột PRODUCT_ID, PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_NAME, và DESCRIPTION từ hai bảng đã nói trên.
+
+Hai bảng PRODUCTS và PRODUCTS_BRAND được nối với nhau thông qua điều kiện PRODUCTS.BRAND_ID = PRODUCTS_BRAND.BRAND_ID. Điều này đảm bảo rằng mỗi sản phẩm sẽ được kết hợp với thương hiệu tương ứng của nó.
+
+Câu truy vấn sẽ chỉ trả về các sản phẩm mà tên của chúng chứa chuỗi p_name. Điều này được thực hiện thông qua điều kiện PRODUCTS.PRODUCT_NAME LIKE '%%%s%%', trong đó %s được thay thế bằng giá trị của p_name.
+
+Kết quả của câu truy vấn sau đó được trả về bởi hàm.
+
+Ví dụ về cách sử dụng hàm: SELECT * FROM search_product('Yonex'); sẽ trả về tất cả các sản phẩm có tên chứa chuỗi 'Yonex'.
+
+Câu 2:
+câu lệnh này chỉ dùng truy vấn thông thường ko dùng hàm là vì frontend tìm kiếm theo giá sẽ được định mức sẵn mà ko cho khách hàng nhập vào
+
+Câu 3:
+

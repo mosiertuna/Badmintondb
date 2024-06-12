@@ -20,7 +20,7 @@ CREATE TABLE ADDRESSES
   ADDRESS_ID SERIAL PRIMARY KEY,
   ADDRESS VARCHAR(50) NOT NULL,
   DISTRICT VARCHAR(30) NOT NULL,
-  CITY_ID SERIAL,
+  CITY_ID SERIAL NOT NULL,
   FOREIGN KEY (CITY_ID) REFERENCES CITIES(CITY_ID),
   POSTAL_CODE VARCHAR(10) NOT NULL
 );
@@ -30,9 +30,10 @@ CREATE TABLE CUSTOMERS
 (
   CUSTOMER_ID SERIAL PRIMARY KEY,
   FULL_NAME VARCHAR(40) ,
-  PHONE VARCHAR(10) ,
-  EMAIL VARCHAR(100) ,
-  ADDRESS_ID SERIAL,
+  PHONE VARCHAR(10)   NOT NULL,
+  PASS_WORD VARCHAR(9) NOT NULL,
+  EMAIL VARCHAR(100) NOT NULL,
+  ADDRESS_ID SERIAL  NOT NULL,
   FOREIGN KEY (ADDRESS_ID) REFERENCES ADDRESSES(ADDRESS_ID)
 );
 
@@ -482,14 +483,6 @@ INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
 ('456 Cách Mạng Tháng 8', 'Quận Ninh Kiều', 4, '900000'),
 ('789 Lê Thánh Tôn', 'Quận Ngô Quyền', 3, '420000');
 
--- Inserting more data into the CUSTOMERS table
-INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
-('Trần Thị Mai', '0901234567', 'tranmai@example.com', 2),
-('Lê Văn Nam', '0912345678', 'lennam@example.com', 3),
-('Nguyễn Thị Hương', '0923456789', 'huongnguyen@example.com', 1),
-('Phạm Văn Đức', '0934567890', 'phamduc@example.com', 4),
-('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5);
-
 -- Inserting more data into the CITIES table
 INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
 (7,'Nha Trang'),
@@ -507,14 +500,17 @@ INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
 ('456 Lê Hồng Phong', 'Quận Hồng Bàng', 10, '460000');
 
 -- Inserting more data into the CUSTOMERS table
-INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
-('Trần Văn Bình', '0987654321', 'binhtran@example.com', 6),
-('Nguyễn Thị Lan', '0976543210', 'lannguyen@example.com', 7),
-('Lê Văn Hòa', '0965432109', 'hoale@example.com', 8),
-('Phạm Thị Hà', '0954321098', 'hapham@example.com', 9),
-('Hoàng Minh Tuấn', '0943210987', 'tuantu@example.com', 10);
-
-
+INSERT INTO CUSTOMERS (FULL_NAME, PHONE, PASS_WORD, EMAIL, ADDRESS_ID) VALUES
+('Trần Thị Mai', '0901234567', 'password1', 'tranmai@example.com', 2),
+('Lê Văn Nam', '0912345678', 'password2', 'lennam@example.com', 3),
+('Nguyễn Thị Hương', '0923456789', 'password3', 'huongnguyen@example.com', 1),
+('Phạm Văn Đức', '0934567890', 'password4', 'phamduc@example.com', 4),
+('Hoàng Văn Tuấn', '0945678901', 'password5', 'tuantuan@example.com', 5),
+('Trần Văn Bình', '0987654321', 'password6', 'binhtran@example.com', 6),
+('Nguyễn Thị Lan', '0976543210', 'password7', 'lannguyen@example.com', 7),
+('Lê Văn Hòa', '0965432109', 'password8', 'hoale@example.com', 8),
+('Phạm Thị Hà', '0954321098', 'password9', 'hapham@example.com', 9),
+('Hoàng Minh Tuấn', '0943210987', 'passwords', 'tuantu@example.com', 10);
 
 
 
