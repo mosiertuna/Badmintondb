@@ -567,18 +567,6 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, PASS_WORD, EMAIL, ADDRESS_ID) VALUES
 ('Phạm Thị Hà', '0954321098', 'password9', 'hapham@example.com', 9),
 ('Hoàng Minh Tuấn', '0943210987', 'passwords', 'tuantu@example.com', 10);
 
--- Inserting more data into the CUSTOMERS table
-INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
-('Trần Thị Mai', '0901234567', 'tranmai@example.com', 2),
-('Lê Văn Nam', '0912345678', 'lennam@example.com', 3),
-('Nguyễn Thị Hương', '0923456789', 'huongnguyen@example.com', 1),
-('Phạm Văn Đức', '0934567890', 'phamduc@example.com', 4),
-('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5),
-('Trần Văn Bình', '0987654321', 'binhtran@example.com', 6),
-('Nguyễn Thị Lan', '0976543210', 'lannguyen@example.com', 7),
-('Lê Văn Hòa', '0965432109', 'hoale@example.com', 8),
-('Phạm Thị Hà', '0954321098', 'hapham@example.com', 9),
-('Hoàng Minh Tuấn', '0943210987', 'tuantu@example.com', 10);
 
 
 
