@@ -537,7 +537,13 @@ INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
 ('25 Lê Duẩn', 'Quận Hải Châu', 2, '550000'),
 ('123 Lê Lợi', 'Quận Ngô Quyền', 3, '410000'),
 ('456 Cách Mạng Tháng 8', 'Quận Ninh Kiều', 4, '900000'),
-('789 Lê Thánh Tôn', 'Quận Ngô Quyền', 3, '420000');
+('789 Lê Thánh Tôn', 'Quận Ngô Quyền', 3, '420000'),
+('Số 20, Đường Lê Lai', 'Quận 2', 6, '800000'),
+('54 Lê Lợi', 'Quận Thanh Khê', 7, '450000'),
+('321 Lê Hồng Phong', 'Quận Lê Chân', 8, '350000'),
+('789 Lê Lai', 'Quận Ninh Kiều', 9, '950000'),
+('456 Lê Hồng Phong', 'Quận Hồng Bàng', 10, '460000');
+
 
 -- Inserting more data into the CUSTOMERS table
 INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
@@ -545,20 +551,7 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
 ('Lê Văn Nam', '0912345678', 'lennam@example.com', 3),
 ('Nguyễn Thị Hương', '0923456789', 'huongnguyen@example.com', 1),
 ('Phạm Văn Đức', '0934567890', 'phamduc@example.com', 4),
-('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5);
-
-
-
--- Inserting more data into the ADDRESSES table
-INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
-('Số 20, Đường Lê Lai', 'Quận 2', 6, '800000'),
-('54 Lê Lợi', 'Quận Thanh Khê', 7, '450000'),
-('321 Lê Hồng Phong', 'Quận Lê Chân', 8, '350000'),
-('789 Lê Lai', 'Quận Ninh Kiều', 9, '950000'),
-('456 Lê Hồng Phong', 'Quận Hồng Bàng', 10, '460000');
-
--- Inserting more data into the CUSTOMERS table
-INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
+('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5),
 ('Trần Văn Bình', '0987654321', 'binhtran@example.com', 6),
 ('Nguyễn Thị Lan', '0976543210', 'lannguyen@example.com', 7),
 ('Lê Văn Hòa', '0965432109', 'hoale@example.com', 8),
