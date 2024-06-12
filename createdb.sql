@@ -464,15 +464,72 @@ INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
 ('Voucher HHH', '2024-12-01', '2024-12-31', 35, 250, 50);
 
 
--- Inserting more data into the CITIES table
+-- Inserting  data into the CITIES table
 INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
+(1, 'Hồ Chí Minh'),
+(2, 'Đà Nẵng'),
+(3, 'Hải Phòng'),
+(4, 'Cần Thơ'),
+(5, 'Hải Dương'),
+(6, 'Hà Nội'),
+(7, 'Nha Trang'),
+(8, 'Vũng Tàu'),
+(9, 'Huế'),
+(10, 'Hà Giang'),
+(11, 'Bắc Ninh'),
+(12, 'Đà Lạt'),
+(13, 'Quy Nhơn'),
+(14, 'Buôn Ma Thuột'),
+(15, 'Thái Nguyên'),
+(16, 'Vinh'),
+(17, 'Tam Kỳ'),
+(18, 'Pleiku'),
+(19, 'Bạc Liêu'),
+(20, 'Vĩnh Yên'),
+(21, 'Cà Mau'),
+(22, 'Lào Cai'),
+(23, 'Thanh Hóa'),
+(24, 'Quảng Ngãi'),
+(25, 'Ninh Bình'),
+(26, 'Vĩnh Long'),
+(27, 'Đồng Hới'),
+(28, 'Bắc Giang'),
+(29, 'Hạ Long'),
+(30, 'Tây Ninh'),
+(31, 'Bến Tre'),
+(32, 'Biên Hòa'),
+(33, 'Cao Lãnh'),
+(34, 'Điện Biên Phủ'),
+(35, 'Hòa Bình'),
+(36, 'Hưng Yên'),
+(37, 'Kon Tum'),
+(38, 'Lạng Sơn'),
+(39, 'Lào Cai'),
+(40, 'Long Xuyên'),
+(41, 'Móng Cái'),
+(42, 'Nam Định'),
+(43, 'Phan Rang - Tháp Chàm'),
+(44, 'Phan Thiết'),
+(45, 'Rạch Giá'),
+(46, 'Sơn La'),
+(47, 'Tân An'),
+(48, 'Thái Bình'),
+(49, 'Tuyên Quang'),
+(50, 'Tuy Hòa'),
+(51, 'Uông Bí'),
+(52, 'Việt Trì'),
+(53, 'Vĩnh Long'),
+(54, 'Yên Bái'),
+(55, 'Thủ Dầu Một'),
+(56, 'Sa Đéc'),
+(57, 'Bắc Kạn'),
+(58, 'Thái Nguyên'),
+(59, 'Hưng Yên'),
+(60, 'Phủ Lý'),
+(61, 'Bình Định'),
+(62, 'Phú Quốc'),
+(63, 'Hội An');
 
-(1,'Hồ Chí Minh'),
-(2,'Đà Nẵng'),
-(3,'Hải Phòng'),
-(4,'Cần Thơ'),
-(5,'Hải Dương'),
-(6, 'Hà Nội');
 
 -- Inserting more data into the ADDRESSES table
 INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
@@ -490,13 +547,7 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS_ID) VALUES
 ('Phạm Văn Đức', '0934567890', 'phamduc@example.com', 4),
 ('Hoàng Văn Tuấn', '0945678901', 'tuantuan@example.com', 5);
 
--- Inserting more data into the CITIES table
-INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
-(7,'Nha Trang'),
-(8,'Vũng Tàu'),
-(9,'Huế'),
-(10,'Hà Giang'),
-(11,'Bắc Ninh');
+
 
 -- Inserting more data into the ADDRESSES table
 INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE) VALUES
