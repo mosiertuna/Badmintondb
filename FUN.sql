@@ -48,6 +48,6 @@ BEGIN
     END IF;
 END;
 $$
-LANGUAGE 'plpgsql'
+LANGUAGE 'plpgsql';
 
 

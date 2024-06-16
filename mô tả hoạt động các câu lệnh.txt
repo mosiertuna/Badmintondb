@@ -22,3 +22,16 @@ câu lệnh này chỉ dùng truy vấn thông thường ko dùng hàm là vì f
 
 Câu 3:
 
+
+
+câu 17:
+IN của câu lệnh, nối các bảng CUSTOMERS, ORDERS, ADDRESSES và CITIES dựa trên các điều kiện được chỉ định.
+
+WHERE o.time >= date_trunc('month', CURRENT_DATE) AND o.time < (date_trunc('month', CURRENT_DATE) + INTERVAL '1 MONTH') AND o.status = 3: Điều kiện WHERE này lọc ra các đơn hàng được đặt trong tháng hiện tại (dựa trên cột time trong bảng ORDERS) và có trạng thái là 3.
+
+GROUP BY c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code: Phần này nhóm các hàng dựa trên thông tin của khách hàng và địa chỉ.
+
+HAVING COUNT(o.order_id) > 3: Điều kiện HAVING này lọc ra các nhóm có hơn 3 đơn hàng.
+
+Kết quả cuối cùng của câu lệnh này sẽ là danh sách các khách hàng đã đặt hơn 3 đơn hàng trong tháng hiện tại, cùng với thông tin liên lạc và địa chỉ của họ.
+
