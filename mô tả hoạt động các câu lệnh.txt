@@ -1,0 +1,37 @@
+Câu 1:
+Hàm search_product này được tạo ra với mục đích tìm kiếm sản phẩm theo tên. Hàm này nhận vào một tham số p_name, đại diện cho tên sản phẩm cần tìm kiếm.
+
+Hàm trả về một bảng với các cột sau: PRODUCT_ID, PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_NAME, và DESCRIPTION.
+
+Dưới đây là cách hàm này hoạt động:
+
+Hàm sẽ thực thi một câu truy vấn SQL được tạo ra từ hàm format. Câu truy vấn này sẽ trả về các thông tin về sản phẩm từ bảng PRODUCTS và PRODUCTS_BRAND.
+
+Câu truy vấn sẽ lấy các cột PRODUCT_ID, PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_NAME, và DESCRIPTION từ hai bảng đã nói trên.
+
+Hai bảng PRODUCTS và PRODUCTS_BRAND được nối với nhau thông qua điều kiện PRODUCTS.BRAND_ID = PRODUCTS_BRAND.BRAND_ID. Điều này đảm bảo rằng mỗi sản phẩm sẽ được kết hợp với thương hiệu tương ứng của nó.
+
+Câu truy vấn sẽ chỉ trả về các sản phẩm mà tên của chúng chứa chuỗi p_name. Điều này được thực hiện thông qua điều kiện PRODUCTS.PRODUCT_NAME LIKE '%%%s%%', trong đó %s được thay thế bằng giá trị của p_name.
+
+Kết quả của câu truy vấn sau đó được trả về bởi hàm.
+
+Ví dụ về cách sử dụng hàm: SELECT * FROM search_product('Yonex'); sẽ trả về tất cả các sản phẩm có tên chứa chuỗi 'Yonex'.
+
+Câu 2:
+câu lệnh này chỉ dùng truy vấn thông thường ko dùng hàm là vì frontend tìm kiếm theo giá sẽ được định mức sẵn mà ko cho khách hàng nhập vào
+
+Câu 3:
+
+
+
+câu 17:
+IN của câu lệnh, nối các bảng CUSTOMERS, ORDERS, ADDRESSES và CITIES dựa trên các điều kiện được chỉ định.
+
+WHERE o.time >= date_trunc('month', CURRENT_DATE) AND o.time < (date_trunc('month', CURRENT_DATE) + INTERVAL '1 MONTH') AND o.status = 3: Điều kiện WHERE này lọc ra các đơn hàng được đặt trong tháng hiện tại (dựa trên cột time trong bảng ORDERS) và có trạng thái là 3.
+
+GROUP BY c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code: Phần này nhóm các hàng dựa trên thông tin của khách hàng và địa chỉ.
+
+HAVING COUNT(o.order_id) > 3: Điều kiện HAVING này lọc ra các nhóm có hơn 3 đơn hàng.
+
+Kết quả cuối cùng của câu lệnh này sẽ là danh sách các khách hàng đã đặt hơn 3 đơn hàng trong tháng hiện tại, cùng với thông tin liên lạc và địa chỉ của họ.
+
