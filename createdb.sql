@@ -1061,7 +1061,9 @@ INSERT INTO CUSTOMERS (FULL_NAME, PHONE, PASS_WORD, EMAIL, ADDRESS_ID) VALUES
 ('Lê Văn Quang', '0952333333', 'password239', 'lequang@example.com', 239),
 ('Phạm Thị Hạnh', '0952444444', 'password240', 'phamhanh@example.com', 240),
 ('Nguyễn Văn Hòa', '0952555555', 'password241', 'nguyenhoa@example.com', 241),
-('Trần Thị Hương', '0952666666', 'password242', 'tranhuong@example.com', 242);
+('Trần Thị Hương', '0952666666', 'password242', 'tranhuong@example.com', 242),
+('Trần Văn Hoàng', '0950111111', 'password217', 'tranhoang@example.com', 243),
+('Nguyễn Thị Ngọc', '0950222222', 'password218', 'ngocnguyen@example.com', 244);
 
 INSERT INTO SHIPPERS (SHIPPER_ID,FULL_NAME, PHONE_NUMBER, STATUS, EMAIL)
 VALUES
