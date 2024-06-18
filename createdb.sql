@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 CREATE TABLE SHIPPERS
 (
   SHIPPER_ID SERIAL PRIMARY KEY,
@@ -12,12 +8,6 @@ CREATE TABLE SHIPPERS
   CHECK(STATUS >= 0 AND STATUS <= 3)
 );
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 CREATE TABLE CITIES
 (
   CITY_ID SERIAL PRIMARY KEY,
@@ -29,24 +19,11 @@ CREATE TABLE ADDRESSES
   ADDRESS_ID SERIAL PRIMARY KEY,
   ADDRESS VARCHAR(50) NOT NULL,
   DISTRICT VARCHAR(30) NOT NULL,
-<<<<<<< HEAD
-  CITY_ID INT,
-=======
   CITY_ID SERIAL NOT NULL,
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
   FOREIGN KEY (CITY_ID) REFERENCES CITIES(CITY_ID),
   POSTAL_CODE VARCHAR(10) NOT NULL
 );
 
-<<<<<<< HEAD
-CREATE TABLE CUSTOMERS
-(
-  CUSTOMER_ID SERIAL PRIMARY KEY,
-  FULL_NAME VARCHAR(40) ,
-  PHONE VARCHAR(10) ,
-  EMAIL VARCHAR(100) ,
-  ADDRESS_ID INT,
-=======
 
 CREATE TABLE CUSTOMERS
 (
@@ -56,7 +33,6 @@ CREATE TABLE CUSTOMERS
   PASS_WORD VARCHAR(20) NOT NULL,
   EMAIL VARCHAR(100) NOT NULL,
   ADDRESS_ID SERIAL  NOT NULL,
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
   FOREIGN KEY (ADDRESS_ID) REFERENCES ADDRESSES(ADDRESS_ID)
 );
 
@@ -110,17 +86,6 @@ CREATE TABLE LIST
   CHECK(QUANTITY >= 0)
 );
 
-<<<<<<< HEAD
-CREATE TABLE DISCOUNT
-(
-  ORDER_ID INT NOT NULL,
-  VOUCHER_ID INT NOT NULL,
-  PRIMARY KEY (ORDER_ID, VOUCHER_ID),
-  FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ORDER_ID),
-  FOREIGN KEY (VOUCHER_ID) REFERENCES VOUCHERS(VOUCHER_ID)
-);
-=======
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 
 CREATE TABLE PRODUCTS_BRAND
 (
@@ -151,11 +116,8 @@ VALUES
   ('Yonex');
 
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 -- Tạo dữ liệu mẫu cho bảng PRODUCTS
 INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
@@ -456,11 +418,7 @@ VALUES
   ('Tất Cầu Lông Proace ST-101', 65.00, 80, 3, 7, 'Tất cầu lông thoáng khí, hút ẩm tốt, mang lại cảm giác thoải mái.');
 
 --vouchers
-<<<<<<< HEAD
-INSERT INTO VOUCHERS (PRODUCT_NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID) VALUES
-=======
 INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID) VALUES
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 ('Voucher A', '2024-01-01', '2024-01-31', 20, 100, 2),
 ('Voucher B', '2024-02-01', '2024-02-28', 15, 200, 5),
 ('Voucher C', '2024-03-01', '2024-03-31', 25, 150, 10),
@@ -522,102 +480,6 @@ INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
 ('Voucher GGG', '2024-11-01', '2024-11-30', 30, 150, 40),
 ('Voucher HHH', '2024-12-01', '2024-12-31', 35, 250, 50);
 
-<<<<<<< HEAD
-UPDATE public."products" SET unit_price = unit_price * 1000;
-
-INSERT INTO CITIES (CITY_NAME) VALUES 
-('Hanoi'),
-('Ho Chi Minh City'),
-('Da Nang'),
-('Haiphong'),
-('Can Tho'),
-('Nha Trang'),
-('Hue'),
-('Bien Hoa'),
-('Buon Ma Thuot'),
-('Da Lat'),
-('Vung Tau'),
-('Quy Nhon'),
-('Rach Gia'),
-('Thai Nguyen'),
-('Nam Dinh'),
-('Phan Thiet'),
-('Thanh Hoa'),
-('Vinh'),
-('My Tho'),
-('Cam Ranh'),
-('Pleiku'),
-('Long Xuyen'),
-('Bac Lieu'),
-('Ca Mau'),
-('Cao Lanh'),
-('Hai Duong'),
-('Hai Phong'),
-('Hoa Binh'),
-('Hung Yen'),
-('Kon Tum'),
-('Lai Chau'),
-('Lang Son'),
-('Lao Cai'),
-('Phan Rang-Thap Cham'),
-('Quang Ngai'),
-('Soc Trang'),
-('Son La'),
-('Tam Ky'),
-('Tan An'),
-('Tuy Hoa'),
-('Uong Bi'),
-('Vi Thanh'),
-('Yen Bai'),
-('Bac Giang'),
-('Bac Kan'),
-('Bac Ninh'),
-('Ben Tre'),
-('Binh Dinh'),
-('Binh Phuoc'),
-('Binh Thuan'),
-('Ca Mau'),
-('Cao Bang'),
-('Dak Lak'),
-('Dak Nong'),
-('Dien Bien Phu'),
-('Dong Hoi'),
-('Dong Ha'),
-('Gia Nghia'),
-('Ha Giang'),
-('Ha Nam'),
-('Ha Tinh'),
-('Hoa Binh'),
-('Hung Yen'),
-('Kien Giang'),
-('Lai Chau'),
-('Lam Dong'),
-('Lang Son'),
-('Lao Cai'),
-('Nam Dinh'),
-('Nghe An'),
-('Ninh Binh'),
-('Ninh Thuan'),
-('Phu Tho'),
-('Phu Yen'),
-('Quang Binh'),
-('Quang Nam'),
-('Quang Ninh'),
-('Quang Tri'),
-('Soc Trang'),
-('Son La'),
-('Tay Ninh'),
-('Thai Binh'),
-('Thai Nguyen'),
-('Thanh Hoa'),
-('Thua Thien Hue'),
-('Tien Giang'),
-('Tra Vinh'),
-('Tuyen Quang'),
-('Vinh Long'),
-('Vinh Phuc'),
-('Yen Bai');
-=======
 
 -- Inserting  data into the CITIES table
 INSERT INTO CITIES (CITY_ID, CITY_NAME) VALUES
@@ -1803,4 +1665,3 @@ VALUES
 
 
 
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
