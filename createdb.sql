@@ -1190,6 +1190,30 @@ SELECT
     FLOOR(RANDOM() * 239) + 1 AS PRODUCT_ID
 FROM generate_series(1, 100);
 
+CREATE OR REPLACE FUNCTION update_total_price() RETURNS TRIGGER AS $$
+BEGIN
+  DECLARE
+    final_total MONEY;
+  BEGIN
+    SELECT (SUM(CAST(PRODUCTS.UNIT_PRICE AS numeric) * NEW.QUANTITY) - 
+            COALESCE(SUM(CAST(VOUCHERS.PERCENT_OFF AS numeric) * CAST(PRODUCTS.UNIT_PRICE AS numeric) * NEW.QUANTITY / 100), 0)) 
+    INTO final_total
+    FROM PRODUCTS
+    LEFT JOIN VOUCHERS ON PRODUCTS.PRODUCT_ID = VOUCHERS.PRODUCT_ID AND CURRENT_DATE BETWEEN VOUCHERS.DAY_START AND VOUCHERS.DAY_OFF
+    WHERE PRODUCTS.PRODUCT_ID = NEW.PRODUCT_ID;
+
+    UPDATE ORDERS
+    SET TOTAL_PRICE = TOTAL_PRICE + final_total
+    WHERE ORDER_ID = NEW.ORDER_ID;
+
+    RETURN NEW;
+  END;
+END; $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER update_total_after_insert
+AFTER INSERT ON LIST
+FOR EACH ROW
+EXECUTE FUNCTION update_total_price();
 
 -- Chèn 40 dữ liệu order vào bảng ORDERS với STATUS mặc định là 1
 INSERT INTO ORDERS (TIME, ADDRESS, STATUS, CUSTOMER_ID, SHIPPER_ID)
@@ -1534,6 +1558,128 @@ VALUES
     ('2028-12-19', '567 Lê Văn Sỹ, Quận 3, TP.HCM', 1, 211, 22),
     ('2028-12-26', '789 Phan Xích Long, Quận Phú Nhuận, TP.HCM', 1, 222, 33);
 
+UPDATE ORDERS
+SET TOTAL_PRICE = 0;
+
+INSERT INTO LIST (QUANTITY, PRODUCT_ID, ORDER_ID)
+VALUES
+(15, 32, 145),
+(8, 179, 203),
+(3, 67, 52),
+(10, 126, 89),
+(6, 221, 137),
+(4, 98, 177),
+(18, 54, 215),
+(5, 189, 98),
+(12, 76, 204),
+(2, 211, 33),
+(19, 33, 179),
+(7, 156, 41),
+(14, 89, 96),
+(9, 199, 57),
+(1, 45, 129),
+(11, 112, 82),
+(16, 77, 201),
+(13, 234, 159),
+(20, 145, 245),
+(17, 21, 116),
+(15, 176, 72),
+(8, 55, 213),
+(3, 189, 55),
+(10, 123, 82),
+(6, 42, 193),
+(4, 77, 104),
+(18, 210, 218),
+(5, 99, 126),
+(12, 167, 208),
+(2, 32, 61),
+(19, 88, 189),
+(7, 145, 37),
+(14, 201, 101),
+(9, 79, 61),
+(1, 36, 138),
+(11, 132, 94),
+(16, 163, 198),
+(13, 222, 167),
+(20, 197, 253),
+(17, 49, 123),
+(15, 129, 99),
+(8, 176, 223),
+(3, 67, 58),
+(10, 128, 87),
+(6, 223, 138),
+(4, 95, 174),
+(18, 52, 221),
+(5, 185, 104),
+(12, 71, 203),
+(2, 204, 31),
+(19, 37, 173),
+(7, 152, 47);
+
+
+-- Generate 50 rows for the LIST table
+INSERT INTO LIST (QUANTITY, PRODUCT_ID, ORDER_ID)
+VALUES
+  (12, 145, 103),
+  (5, 212, 56),
+  (18, 37, 198),
+  (7, 104, 23),
+  (10, 76, 159),
+  (3, 91, 234),
+  (15, 28, 72),
+  (20, 191, 14),
+  (9, 63, 245),
+  (4, 179, 107),
+  (11, 50, 215),
+  (6, 123, 89),
+  (8, 198, 37),
+  (14, 15, 132),
+  (17, 84, 201),
+  (13, 111, 48),
+  (2, 33, 178),
+  (16, 195, 95),
+  (1, 7, 213),
+  (19, 160, 65),
+  (12, 205, 10),
+  (5, 94, 183),
+  (18, 126, 42),
+  (7, 47, 174),
+  (10, 178, 31),
+  (3, 25, 147),
+  (15, 153, 84),
+  (20, 67, 27),
+  (9, 118, 201),
+  (4, 92, 109),
+  (11, 132, 221),
+  (6, 61, 97),
+  (8, 174, 39),
+  (14, 19, 142),
+  (17, 109, 205),
+  (13, 86, 52),
+  (2, 45, 182),
+  (16, 196, 91),
+  (1, 13, 219),
+  (19, 162, 69),
+  (12, 206, 12),
+  (5, 96, 185),
+  (18, 128, 44),
+  (7, 49, 176),
+  (10, 180, 33),
+  (3, 27, 149),
+  (15, 155, 86),
+  (20, 69, 29),
+  (9, 120, 203),
+  (4, 94, 111),
+  (11, 134, 223),
+  (6, 63, 99),
+  (8, 176, 41),
+  (14, 21, 144),
+  (17, 111, 207),
+  (13, 88, 54),
+  (2, 47, 184),
+  (16, 198, 93),
+  (1, 15, 221),
+  (19, 164, 71);
     INSERT INTO LIST (QUANTITY, PRODUCT_ID, ORDER_ID) VALUES
 (1, 32, 1),
 (2, 45, 2),

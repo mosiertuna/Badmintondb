@@ -70,7 +70,6 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM select_product_brand('Yonex');
 
 
-
 --cau 5--
 --tra cứu theo loại sản phẩm--
 CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
@@ -143,9 +142,6 @@ SELECT SUM(PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS ORDER_TOTAL
 FROM LIST
 JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
 WHERE LIST.ORDER_ID = 24325232;
---tổng tiền của đơn hàng đã được giảm giá--
-
-
 
 
 --cau 9--
@@ -331,14 +327,13 @@ SELECT p.product_name, SUM(l.quantity) AS total_quantity
 FROM LIST l
 JOIN PRODUCTS p ON l.product_id = p.product_id
 JOIN PRODUCTS_BRAND pb ON p.brand_id = pb.brand_id
-WHERE l.time >= '2024-06-01' AND l.time < '2024-06-30'
+JOIN ORDERS o ON l.order_id = o.order_id
+WHERE o.time >= '2024-06-01' AND o.time < '2024-06-30'
   AND pb.brand_name = 'Yonex'
   AND p.type = 0
 GROUP BY p.product_id
 ORDER BY total_quantity DESC
 LIMIT 1;
-
-
 
 --cau23--
 --Tính tổng doanh thu trong khoảng thời gian cụ thể--
@@ -384,6 +379,9 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
+SELECT place_order(_customer_id := 1, _status := 0, _products := ARRAY[1, 2, 3], _quantities := ARRAY[10, 20, 30]);
+
+
 
 
 --cau26--
@@ -417,16 +415,62 @@ GROUP BY SHIPPERS.SHIPPER_ID, SHIPPERS.FULL_NAME;
 
 
 
---cau27--
+--cau28--
 --Lấy danh sách của sản phẩm mà số lượng tồn kho nhiều hơn, ít hơn 10 ,...--
 SELECT PRODUCT_NAME, AMOUNT
 FROM PRODUCTS
 ORDER BY AMOUNT DESC
 LIMIT 10;
 
---cau28-- 
+SELECT PRODUCT_NAME, AMOUNT
+FROM PRODUCTS
+ORDER BY AMOUNT asc
+LIMIT 10;
+
+--cau29-- 
 --viet trigger tự cập nhập số lượng sản phẩm còn lại trong bảng customer sau khi khách hàng đặt hàng--
-CREATE OR REPLACE FUNCTION update_product_amount()
+CREATE OR REPLACE FUNCTION update_product_amount() RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE PRODUCTS
+  SET AMOUNT = AMOUNT - NEW.QUANTITY
+  WHERE PRODUCT_ID = NEW.PRODUCT_ID;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER update_amount_after_order
+AFTER INSERT ON LIST
+FOR EACH ROW
+EXECUTE FUNCTION update_product_amount();
+
+--cau30--
+--viết trigger tự cập nhật total_price sau khi khách hàng đặt hàng--
+--total_price = quantity * unit_price - discount_amount( được lấy từ voucher cho từng sản phẩm trong list)--
+CREATE OR REPLACE FUNCTION update_total_price() RETURNS TRIGGER AS $$
+BEGIN
+  DECLARE
+    final_total MONEY;
+  BEGIN
+    SELECT (SUM(CAST(PRODUCTS.UNIT_PRICE AS numeric) * NEW.QUANTITY) - 
+            COALESCE(SUM(CAST(VOUCHERS.PERCENT_OFF AS numeric) * CAST(PRODUCTS.UNIT_PRICE AS numeric) * NEW.QUANTITY / 100), 0)) 
+    INTO final_total
+    FROM PRODUCTS
+    LEFT JOIN VOUCHERS ON PRODUCTS.PRODUCT_ID = VOUCHERS.PRODUCT_ID AND CURRENT_DATE BETWEEN VOUCHERS.DAY_START AND VOUCHERS.DAY_OFF
+    WHERE PRODUCTS.PRODUCT_ID = NEW.PRODUCT_ID;
+
+    UPDATE ORDERS
+    SET TOTAL_PRICE = TOTAL_PRICE + final_total
+    WHERE ORDER_ID = NEW.ORDER_ID;
+
+    RETURN NEW;
+  END;
+END; $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER update_total_after_insert
+AFTER INSERT ON LIST
+FOR EACH ROW
+EXECUTE FUNCTION update_total_price();
 
 
 --Tính tổng số sản phẩm còn tồn kho, giá trị tồn kho theo từng loại--
