@@ -260,54 +260,6 @@ ORDER BY total_quantity DESC
 LIMIT 10;
 
 
---tìm khách hàng thân thiết tháng (số đơn hàng trong tháng nhiều hơn 3 lần)
-SELECT c.customer_id, c.full_name
-FROM CUSTOMERS c
-JOIN ORDERS o ON c.customer_id = o.customer_id
-WHERE o.time >= date_trunc('month', CURRENT_DATE)
-  AND o.time < (date_trunc('month', CURRENT_DATE) + INTERVAL '1 MONTH')
-  AND o.status = 3
-GROUP BY c.customer_id, c.full_name
-HAVING COUNT(o.order_id) > 3;
-
-
-CREATE OR REPLACE FUNCTION insert_voucher(
-    p_name VARCHAR,
-    p_day_start DATE,
-    p_day_off DATE,
-    p_percent_off INT,
-    p_amount INT,
-    p_product_id INT
-) RETURNS VOID AS $$
-BEGIN
-    INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
-    VALUES (p_name, p_day_start, p_day_off, p_percent_off, p_amount, p_product_id);
-END;
-$$ LANGUAGE plpgsql;
-
-
-SELECT insert_voucher('Tên Voucher', '2024-06-01', '2024-06-05', 30, 100, 17);
-
---cau15--
---tra cứu các voucher có thể sử dụng cho 1 đơn hàng cụ thể
-SELECT  v.product_id,v.name, v.percent_off, p.unit_price
-FROM LIST l 
-JOIN VOUCHERS v ON l.product_id = v.product_id
-JOIN PRODUCTS p ON l.product_id = p.product_id
-WHERE l.order_id = 1;
-
-
---cau16--
---tìm BEST-SELLER theo loại sản phẩm
-SELECT p.product_name, SUM(quantity) AS total_quantity
-FROM ORDERS o 
-JOIN LIST l ON o.order_id = l.order_id
-JOIN PRODUCTS p ON p.product_id = l.product_id
-WHERE o.status = 3 AND p.type = 0                   -- trạng thái 3 nghĩa là đã giao hàng thành công/ type = 0 là loại sản phẩm--
-GROUP BY p.product_id
-ORDER BY total_quantity DESC
-LIMIT 10;
-
 
 --cau17--
 --tìm khách hàng thân thiết tháng (số đơn hàng trong tháng nhiều hơn 3 lần)
@@ -450,8 +402,18 @@ GROUP BY SHIPPERS.SHIPPER_ID, SHIPPERS.FULL_NAME;
 
 
 
-
+--cau27--
 --Lấy danh sách của sản phẩm mà số lượng tồn kho nhiều hơn, ít hơn 10 ,...--
+SELECT PRODUCT_NAME, AMOUNT
+FROM PRODUCTS
+ORDER BY AMOUNT DESC
+LIMIT 10;
+
+--cau28-- 
+--viet trigger tự cập nhập số lượng sản phẩm còn lại trong bảng customer sau khi khách hàng đặt hàng--
+CREATE OR REPLACE FUNCTION update_product_amount()
+
+
 --Tính tổng số sản phẩm còn tồn kho, giá trị tồn kho theo từng loại--
 --Lấy thông tin danh sách voucher mà khách hàng đã sử dụng--
 --Top 10 voucher được sư dụng nhiều nhất--
