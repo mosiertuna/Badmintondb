@@ -477,3 +477,255 @@ EXECUTE FUNCTION update_total_price();
 --Lấy thông tin danh sách voucher mà khách hàng đã sử dụng--
 --Top 10 voucher được sư dụng nhiều nhất--
 --Tính tổng gía trị các voucher giảm giá trong chương trình--
+
+--Tìm khách hàng mua nhiều sản phẩm nhất trong thành phố cụ thể--
+CREATE OR REPLACE FUNCTION get_top_customer_by_city(p_city_name VARCHAR)
+RETURNS TABLE (
+  customer_id INT,
+  full_name VARCHAR,
+  phone VARCHAR,
+  email VARCHAR,
+  total_orders BIGINT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    c.customer_id,
+    c.full_name,
+    c.phone,
+    c.email,
+    COUNT(o.order_id) AS total_orders
+  FROM 
+    CUSTOMERS c
+  JOIN 
+    ORDERS o ON c.customer_id = o.customer_id
+  JOIN 
+    ADDRESSES a ON o.address = a.address
+  JOIN 
+    CITIES ci ON a.city_id = ci.city_id
+  WHERE 
+    ci.city_name = p_city_name
+    AND o.status = 3
+  GROUP BY 
+    c.customer_id, c.full_name, c.phone, c.email
+  ORDER BY 
+    total_orders DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+--top 10 khách hàng mua nhiều nhất trong ngày--
+CREATE OR REPLACE FUNCTION get_top_customers_by_day(day_val DATE)
+RETURNS TABLE (
+  customer_id INT,
+  full_name VARCHAR,
+  phone VARCHAR,
+  email VARCHAR,
+  address VARCHAR,
+  district VARCHAR,
+  city_name VARCHAR,
+  postal_code VARCHAR,
+  order_count BIGINT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    c.customer_id,
+    c.full_name,
+    c.phone,
+    c.email,
+    a.address,
+    a.district,
+    ci.city_name,
+    a.postal_code,
+    COUNT(o.order_id) AS order_count
+  FROM 
+    CUSTOMERS c
+  JOIN 
+    ORDERS o ON c.customer_id = o.customer_id
+  JOIN 
+    ADDRESSES a ON o.address = a.address
+  JOIN 
+    CITIES ci ON a.city_id = ci.city_id
+  WHERE 
+    o.time >= day_val
+    AND o.time < day_val + INTERVAL '1 DAY'
+    AND o.status = 3
+  GROUP BY 
+    c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code
+  ORDER BY 
+    order_count DESC
+  LIMIT 10;
+END;
+$$ LANGUAGE plpgsql;
+
+ --top 10 khách hàng mua nhiều nhất trong năm--
+CREATE OR REPLACE FUNCTION get_top_customers_by_year(year_val INT)
+RETURNS TABLE (
+  customer_id INT,
+  full_name VARCHAR,
+  phone VARCHAR,
+  email VARCHAR,
+  address VARCHAR,
+  district VARCHAR,
+  city_name VARCHAR,
+  postal_code VARCHAR,
+  order_count BIGINT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    c.customer_id,
+    c.full_name,
+    c.phone,
+    c.email,
+    a.address,
+    a.district,
+    ci.city_name,
+    a.postal_code,
+    COUNT(o.order_id) AS order_count
+  FROM 
+    CUSTOMERS c
+  JOIN 
+    ORDERS o ON c.customer_id = o.customer_id
+  JOIN 
+    ADDRESSES a ON o.address = a.address
+  JOIN 
+    CITIES ci ON a.city_id = ci.city_id
+  WHERE 
+    EXTRACT(YEAR FROM o.time) = year_val
+    AND o.status = 3
+  GROUP BY 
+    c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code
+  ORDER BY 
+    order_count DESC
+  LIMIT 10;
+END;
+$$ LANGUAGE plpgsql;
+
+--Tìm top 10 khách hàng mua  nhiều nhất trong tháng, năm cụ thể--
+CREATE OR REPLACE FUNCTION get_top_customers_by_month_year(month_val INT, year_val INT)
+RETURNS TABLE (
+  customer_id INT,
+  full_name VARCHAR,
+  phone VARCHAR,
+  email VARCHAR,
+  address VARCHAR,
+  district VARCHAR,
+  city_name VARCHAR,
+  postal_code VARCHAR,
+  order_count BIGINT 
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    c.customer_id,
+    c.full_name,
+    c.phone,
+    c.email,
+    a.address,
+    a.district,
+    ci.city_name,
+    a.postal_code,
+    COUNT(o.order_id) AS order_count
+  FROM 
+    CUSTOMERS c
+  JOIN 
+    ORDERS o ON c.customer_id = o.customer_id
+  JOIN 
+    ADDRESSES a ON o.address = a.address
+  JOIN 
+    CITIES ci ON a.city_id = ci.city_id
+  WHERE 
+    EXTRACT(MONTH FROM o.time) = month_val
+    AND EXTRACT(YEAR FROM o.time) = year_val
+    AND o.status = 3
+  GROUP BY 
+    c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code
+  ORDER BY 
+    order_count DESC
+  LIMIT 10;
+END;
+$$ LANGUAGE plpgsql;
+
+--Tính số tổng số lần mua hàng của mỗi khách hàng--
+CREATE OR REPLACE FUNCTION get_order_count_per_customer()
+RETURNS TABLE (
+  customer_id INT,
+  full_name VARCHAR,
+  order_count BIGINT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    C.CUSTOMER_ID,
+    C.FULL_NAME,
+    COUNT(O.ORDER_ID) AS order_count
+  FROM 
+    CUSTOMERS C
+  LEFT JOIN 
+    ORDERS O ON C.CUSTOMER_ID = O.CUSTOMER_ID
+  GROUP BY 
+    C.CUSTOMER_ID, C.FULL_NAME
+  ORDER BY 
+    order_count DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Execute the function
+SELECT * FROM get_order_count_per_customer();
+
+--Hiển thị thông tin sản phẩm có số lượng tồn kho trong khoảng mong muốn--
+CREATE OR REPLACE FUNCTION get_products_by_amount_range(min_amount INT, max_amount INT)
+RETURNS TABLE (
+  product_id INT,
+  product_name VARCHAR,
+  unit_price MONEY,
+  amount INT,
+  type INT,
+  brand_id INT,
+  description VARCHAR
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    PRODUCTS.PRODUCT_ID,
+    PRODUCTS.PRODUCT_NAME,
+    PRODUCTS.UNIT_PRICE,
+    PRODUCTS.AMOUNT,
+    PRODUCTS.TYPE,
+    PRODUCTS.BRAND_ID,
+    PRODUCTS.DESCRIPTION
+  FROM PRODUCTS
+  WHERE PRODUCTS.AMOUNT BETWEEN min_amount AND max_amount;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Execute the function
+SELECT * FROM get_products_by_amount_range(10, 50);
+
+--Sắp xếp các nhãn hàng có số lượng tồn kho giảm dần ( hoặc tăng dần)-- 
+CREATE OR REPLACE FUNCTION get_sorted_brand_inventory()
+RETURNS TABLE (
+  brand_id INT,
+  brand_name VARCHAR,
+  total_amount BIGINT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    pb.BRAND_ID,
+    pb.BRAND_NAME,
+    SUM(p.AMOUNT) AS total_amount
+  FROM 
+    PRODUCTS p
+  JOIN 
+    PRODUCTS_BRAND pb ON p.BRAND_ID = pb.BRAND_ID
+  GROUP BY 
+    pb.BRAND_ID, pb.BRAND_NAME
+  ORDER BY 
+    total_amount DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Execute the function
+SELECT * FROM get_sorted_brand_inventory();
