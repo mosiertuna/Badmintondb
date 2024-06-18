@@ -1,5 +1,3 @@
-
-
 --cau 1--
 --hàm tìm sản phẩm theo tên--
 CREATE OR REPLACE FUNCTION search_product(p_name VARCHAR)
@@ -31,20 +29,20 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM search_product('Yonex');
 
 
---cau 2--
+--cau 2--tick
 --tìm sản phẩm theo giá--
 SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN '1000' AND '20000';
 
 
 
---cau 3--
+--cau 3--tick
 --tra cứu đơn hàng theo tên khách hàng-- (cả shipper và khách hàng đều dùng được)
 SELECT ORDERS.ORDER_ID, ORDERS.TIME, ORDERS.TOTAL_PRICE, ORDERS.ADDRESS, ORDERS.STATUS
 FROM ORDERS 
 JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID 
 WHERE CUSTOMERS.FULL_NAME = 'Tên Khách Hàng';
 
---cau 4--
+--cau 4--tick
 --tra cứu tất cả sản phẩm theo tên brand nhập vào--
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
 FROM PRODUCTS 
@@ -72,7 +70,7 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM select_product_brand('Yonex');
 
 
---5.2--
+--cau 5--
 --tra cứu theo loại sản phẩm--
 CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
 RETURNS TABLE (
@@ -94,7 +92,8 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM search_product_type(2);
 
 
---cau6--
+
+--cau 6--
 --tra cứu thông tin khách hàng của 1 đơn hàng cụ thể--
 SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, ADDRESSES.ADDRESS, ADDRESSES.DISTRICT, CITIES.CITY_NAME
 FROM ORDERS
@@ -104,13 +103,38 @@ JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
 WHERE ORDERS.ORDER_ID = 26261616;
 
 
+
 --cau 7--
 --tra cứu thông tin sản phẩm của 1 đơn hàng cụ thể--
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, LIST.QUANTITY, 
        (PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS TOTAL_PRICE
 FROM LIST
 JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
-WHERE LIST.ORDER_ID = 24325232;
+WHERE LIST.ORDER_ID = 200;
+
+--cau 7.2--tick
+CREATE OR REPLACE FUNCTION get_product_info_by_order(p_order_id INT)
+RETURNS TABLE (
+  product_name VARCHAR,
+  unit_price MONEY,
+  quantity INT,
+  total_price MONEY
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    PRODUCTS.PRODUCT_NAME,
+    PRODUCTS.UNIT_PRICE,
+    LIST.QUANTITY,
+    (PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS total_price
+  FROM LIST
+  JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
+  WHERE LIST.ORDER_ID = p_order_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Execute the function
+SELECT * FROM get_product_info_by_order(200);
 
 --cau 8--
 --và tính ra tổng tiền của đơn hàng đó--
@@ -453,4 +477,3 @@ EXECUTE FUNCTION update_total_price();
 --Lấy thông tin danh sách voucher mà khách hàng đã sử dụng--
 --Top 10 voucher được sư dụng nhiều nhất--
 --Tính tổng gía trị các voucher giảm giá trong chương trình--
-
