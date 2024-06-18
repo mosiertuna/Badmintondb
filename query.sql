@@ -1,13 +1,4 @@
 
---tìm sản phẩm theo tên--
-SELECT * FROM PRODUCTS WHERE PRODUCT_NAME LIKE '%%%yon%%';
-
---tìm sản phẩm theo giá--
-SELECT * FROM PRODUCTS WHERE UNIT_PRICE::numeric BETWEEN 1000000 AND 2000000;
-
-DO
-$$
-DECLARE ProductName VARCHAR(10000);
 
 --cau 1--
 --hàm tìm sản phẩm theo tên--
@@ -42,18 +33,7 @@ SELECT * FROM search_product('Yonex');
 
 --cau 2--
 --tìm sản phẩm theo giá--
-<<<<<<< HEAD
-SELECT * FROM PRODUCTS WHERE PRICE BETWEEN 1000000 AND 2000000;
-
---đặt hàng 1 sản phẩm--
-INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, CUSTOMER_ID)
-VALUES 
-  (1, 2, 123), -- Sản phẩm 1 với số lượng 2 cho khách hàng 123
-  (2, 1, 123), -- Sản phẩm 2 với số lượng 1 cho khách hàng 123
-  (3, 5, 123); -- Sản phẩm 3 với số lượng 5 cho khách hàng 123
-
-SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN 1000::MONEY AND 2000::MONEY;
---vi dụ tìm sản phẩm có giá từ 1000 đến 2000--
+SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN '1000' AND '20000';
 
 
 
@@ -67,16 +47,11 @@ WHERE CUSTOMERS.FULL_NAME = 'Tên Khách Hàng';
 --cau 4--
 --tra cứu tất cả sản phẩm theo tên brand nhập vào--
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
-
-SELECT PRODUCTS.NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
-
 FROM PRODUCTS 
 JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID 
 WHERE products_brand.BRAND_NAME = 'Yonex';
 
-DROP FUNCTION IF EXISTS select_product_brand;
-
-
+--4.2--
 CREATE OR REPLACE FUNCTION select_product_brand(p_brand_name VARCHAR)
 RETURNS TABLE (
   PRODUCT_NAME VARCHAR(10000),
@@ -107,8 +82,8 @@ FROM PRODUCTS
 JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID
 WHERE PRODUCTS.TYPE = 1;
 
-
-
+--5.2--
+--tra cứu theo loại sản phẩm--
 CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
 RETURNS TABLE (
   PRODUCT_NAME VARCHAR(10000),
@@ -129,18 +104,14 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM search_product_type(2);
 
 
-
-
+--cau6--
+--tra cứu thông tin khách hàng của 1 đơn hàng cụ thể--
 SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, ADDRESSES.ADDRESS, ADDRESSES.DISTRICT, CITIES.CITY_NAME
 FROM ORDERS
 JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID
-WHERE ORDERS.ORDER_ID = 4;
-WHERE ORDERS.ORDER_ID = '26261616';
 JOIN ADDRESSES ON CUSTOMERS.ADDRESS_ID = ADDRESSES.ADDRESS_ID
 JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
 WHERE ORDERS.ORDER_ID = 26261616;
-
-
 
 
 --cau 7--
@@ -157,6 +128,9 @@ SELECT SUM(PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS ORDER_TOTAL
 FROM LIST
 JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
 WHERE LIST.ORDER_ID = 24325232;
+--tổng tiền của đơn hàng đã được giảm giá--
+
+
 
 
 --cau 9--

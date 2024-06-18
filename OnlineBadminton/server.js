@@ -5,10 +5,10 @@ const port = 8081;
 const { Client, Query } = require('pg');
 const client = new Client({
 	user: 'postgres',
-	password: '1',
+	password: '12345',
 	host: 'localhost',
 	port: '5432',
-	database: 'Store',
+	database: 'Badmintondb',
 });
 var small_url = "";
 
@@ -18,7 +18,6 @@ app.use(express.static(__dirname));
 
 app.get('/getItemList', (req, res) => {
 //TO_DO: VALIDATE INPUT, DATA LAYER PROTECTION
-<<<<<<< HEAD
     var query = `SELECT * FROM public."products" WHERE 1=1`;
     const search_name = req.query.search_query;
     const price_range = req.query.Price_range;
@@ -43,10 +42,6 @@ app.get('/getItemList', (req, res) => {
     }
     console.log(query);
     client.query(query, (err, result) => {
-=======
-
-    client.query(`SELECT * FROM public."products" `, (err, result) => {
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
         if(err) console.log("error!");
         res.status(200).json({info: result.rows, maxpage: result.rowCount}); 
     })
