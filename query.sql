@@ -139,7 +139,7 @@ WHERE LIST.ORDER_ID = 24325232;
 
 --cau 11--
 --duyệt các sản phẩm trong list đã sử dụng voucher và tự động -1 amount của voucher--
-CREATE OR REPLACE FUNCTION decrease_voucher_amount() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION delete_voucher_amount() RETURNS TRIGGER AS $$
 BEGIN
   IF EXISTS (SELECT 1 FROM VOUCHERS WHERE PRODUCT_ID = NEW.PRODUCT_ID) THEN
     UPDATE VOUCHERS
@@ -150,9 +150,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER decrease_voucher_amount_after_order
+CREATE OR REPLACE TRIGGER delete_voucher
 AFTER INSERT ON LIST
-FOR EACH ROW EXECUTE PROCEDURE decrease_voucher_amount();
+FOR EACH ROW EXECUTE PROCEDURE delete_voucher_amount();
 
 
 --cau 12--
@@ -227,10 +227,12 @@ SELECT insert_voucher('Tên Voucher', '2024-06-01', '2024-06-05', 30, 100, 17);
 
 --cau15--
 --tra cứu các voucher có thể sử dụng cho 1 đơn hàng cụ thể
-SELECT v.name,v.percent_off,v.product_id
+SELECT  v.product_id,v.name, v.percent_off, p.unit_price
 FROM LIST l 
 JOIN VOUCHERS v ON l.product_id = v.product_id
-WHERE l.order_id = 5
+JOIN PRODUCTS p ON l.product_id = p.product_id
+WHERE l.order_id = 1;
+
 
 --cau16--
 --tìm BEST-SELLER theo loại sản phẩm
@@ -280,19 +282,20 @@ WHERE customer_id = 1;
 
 
 
-
+--cau21--
 --Tìm nhãn hàng cung cấp nhiều sản phẩm nhất trong thời gian cụ thể--
-SELECT pb.brand_name, COUNT(p.product_id) AS total_product
-FROM PRODUCTS p
-JOIN PRODUCTS_BRAND pb ON p.brand_id = pb.brand_id
-WHERE p.time >= '2024-06-01' AND p.time < '2024-06-30'
-GROUP BY pb.brand_name
+SELECT c.customer_id AS brand_name, COUNT(o.order_id) AS total_product
+FROM ORDERS o
+JOIN CUSTOMERS c ON o.customer_id = c.customer_id
+WHERE o.time >= '2024-06-01' AND o.time < '2024-07-01'
+GROUP BY c.customer_id
 ORDER BY total_product DESC
 LIMIT 1;
 
 
 
 
+--cau22--
 --Tìm sản phẩm được yêu thích nhất trong thời gian cụ thể, trong nhãn hàng cụ thể, trong từng loại sản phẩm--
 SELECT p.product_name, SUM(l.quantity) AS total_quantity
 FROM LIST l
@@ -307,42 +310,84 @@ LIMIT 1;
 
 
 
-
+--cau23--
 --Tính tổng doanh thu trong khoảng thời gian cụ thể--
 SELECT SUM(total_price) AS total_revenue
 FROM ORDERS
 WHERE time >= '2024-06-01' AND time < '2024-06-30';
 
 
-
-
---Lấy danh sách nhân viên theo chức vụ--
-SELECT e.employee_id, e.full_name, e.phone, e.email, e.address, e.position
-FROM EMPLOYEES e
-WHERE e.position = 'Shipper';
-
-
-
-
+--cau24--
 --Tính tổng số đơn giao thành công trong thời gian cụ thể--
 SELECT COUNT(order_id) AS total_order
 FROM ORDERS
 WHERE status = 3
-  AND time >= '2024-06-01' AND time < '2024-06-30';
+AND time >= '2024-06-01' AND time < '2024-06-30';
   
 
 
 
-
+--cau25--
 --đặt hàng 1 sản phẩm--
-INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, CUSTOMER_ID)
-VALUES 
-  (1, 2, 123), -- Sản phẩm 1 với số lượng 2 cho khách hàng 123
-  (2, 1, 123), -- Sản phẩm 2 với số lượng 1 cho khách hàng 123
-  (3, 5, 123); -- Sản phẩm 3 với số lượng 5 cho khách hàng 123
+CREATE OR REPLACE FUNCTION place_order(_customer_id INT, _status INT, _products INT[], _quantities INT[])
+RETURNS VOID AS $$
+DECLARE 
+  _order_id INT;
+  _i INT;
+BEGIN
+  -- Insert a new order into the ORDERS table
+  INSERT INTO ORDERS(TIME, TOTAL_PRICE, STATUS, CUSTOMER_ID)
+  VALUES (CURRENT_DATE, 0, _status, _customer_id)
+  RETURNING ORDER_ID INTO _order_id;
+
+  -- Loop through the products array and insert a new line item into the LIST table for each product in the order
+  FOR _i IN array_lower(_products, 1) .. array_upper(_products, 1)
+  LOOP
+    INSERT INTO LIST(QUANTITY, PRODUCT_ID, ORDER_ID)
+    VALUES (_quantities[_i], _products[_i], _order_id);
+  END LOOP;
+  
+  -- Update the total price in the ORDERS table
+  UPDATE ORDERS
+  SET TOTAL_PRICE = (SELECT SUM(QUANTITY * UNIT_PRICE) FROM LIST JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID WHERE ORDER_ID = _order_id)
+  WHERE ORDER_ID = _order_id;
+
+END;
+$$ LANGUAGE plpgsql;
 
 
+--cau26--
+--trigger tự cập nhật trạng thái của đơn hàng--
+CREATE OR REPLACE FUNCTION update_order_status_orders()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- If the order has a shipper_id, set the order status to 2
+  IF NEW.SHIPPER_ID IS NOT NULL THEN
+    NEW.STATUS := 2;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER order_status_update
+BEFORE INSERT OR UPDATE ON ORDERS
+FOR EACH ROW
+EXECUTE FUNCTION update_order_status_orders();
+
+--cau27--
 --Tìm shippers có tổng số đơn giao hoàn thành trong mỗi tháng(khen thưởng)--
+SELECT SHIPPERS.SHIPPER_ID, SHIPPERS.FULL_NAME, COUNT(*)
+FROM ORDERS
+JOIN SHIPPERS ON ORDERS.SHIPPER_ID = SHIPPERS.SHIPPER_ID
+WHERE EXTRACT(MONTH FROM ORDERS.TIME) = 4
+  AND EXTRACT(YEAR FROM ORDERS.TIME) = 2022 
+  AND ORDERS.STATUS = 3
+GROUP BY SHIPPERS.SHIPPER_ID, SHIPPERS.FULL_NAME;
+
+
+
+
 --Lấy danh sách của sản phẩm mà số lượng tồn kho nhiều hơn, ít hơn 10 ,...--
 --Tính tổng số sản phẩm còn tồn kho, giá trị tồn kho theo từng loại--
 --Lấy thông tin danh sách voucher mà khách hàng đã sử dụng--
