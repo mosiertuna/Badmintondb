@@ -6,6 +6,7 @@
     <title>SHOPPING</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/f6430c4864.js" crossorigin="anonymous"></script>
+    <script src = "jQuery.js" ></script>
 </head>
 <body>
    <div id="Header" class="header">
@@ -14,38 +15,51 @@
   
        </div>
    <div id="Body">
-       <div id = "filter_menu" class = "filter_container">
-        <form>
-            <label for="Price_range">Price range:</label>
-            <select name="Price_range">
-              <option value= "0">Under 500k</option>
-              <option value= "1">500k to 1 mil</option>
-              <option value= "2">Over 1 mil</option>
-            </select>
-        </form>
-        <form>
-            <label for="Product_type">Product type:</label>
-            <select name="Product_type">
-              <option value= "1">Shorts</option>
-              <option value= "2">Shirts</option>
-              <option value= "3">Shoes</option>
-              <option value= "4">Racket</option>
-              <option value= "5">Accessories</option>
-            </select>
-        </form>
-        <form>
-            <label for="Brand_name">Brand:</label>
-            <select name="Brand_name">
-              <option value= "0">BRAND1</option>
-              <option value= "1">BRAND2</option>
-              <option value= "2">BRAND3</option>
-              <option value= "3">BRAND4</option>
-              <option value= "4">BRAND5</option>
-            </select>
-        </form>
+    <div id="filter_menu" class="filter_container">
+      <form id="filter_form" method="get" onsubmit="event.preventDefault(); getItemList();">
+          <label for="search_query">Search:</label>
+            <input type="text" id="search_query" name="search_query" placeholder="Enter search keywords">
+          <label for="price_range">Price range:</label>
+          <select id="price_range" name="Price_range">
+              <option value="">ALL</option>
+              <option value="0">Under 500k</option>
+              <option value="1">500k to 1 mil</option>
+              <option value="2">1 mil to 2 mil</option>
+              <option value="3">2 mil to 3 mil</option>
+              <option value="4">Over 3 mil</option>
+          </select>
+  
+          <label for="product_type">Product type:</label>
+          <select id="product_type" name="Product_type">
+              <option value="">ALL</option>
+              <option value="0">Racket</option>
+              <option value="1">Shoes</option>
+              <option value="2">Uniform</option>
+              <option value="3">Accessories</option>
+              <option value="4">Bags</option>
+              <option value="5">Shuttlecock</option>
+          </select>
+  
+          <label for="brand_name">Brand:</label>
+          <select id="brand_name" name="Brand_name">
+              <option value="">ALL</option>
+              <option value="1">Adidas</option>
+              <option value="2">Apacs</option>
+              <option value="3">Kawasaki</option>
+              <option value="4">Kumpoo</option>
+              <option value="5">Lining</option>
+              <option value="6">Mizuno</option>
+              <option value="7">Proace</option>
+              <option value="8">Victor</option>
+              <option value="9">VNB</option>
+              <option value="10">Yonex</option>
+          </select>
+  
           <br><br>
-            <input type="submit" value="Search product">
-       </div>
+      </form>
+  
+  </div>
+  
        <div id = items_list class="items_container">
        </div>
        <div class="page_container">
