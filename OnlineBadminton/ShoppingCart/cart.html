@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY CART</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/f6430c4864.js" crossorigin="anonymous"></script>
+</head>
+<body>
+   <div id="Header" class="header">
+        <i class="fa-solid fa-house" id="home" style="font-size: 48px; float: right; padding: 20px; transition: 0.5s;"></i>
+   </div>
+   <div id="Body">
+    <div id = items_list class="items_container">
+    </div>
+    <div id = total_price style="text-align: right;"></div>
+    <div id = vouchers_list class="items_container">
+    </div>
+    <form action="/submitCustomer" method="post" onsubmit="return validateForm()">
+        <div>
+            <label for="full_name">Full Name:</label>
+            <input type="text" id="full_name" name="full_name" required>
+        </div>
+        <div>
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
+        </div>
+        <div>
+            <label for="district">District:</label>
+            <input type="text" id="district" name="district" required>
+        </div>
+        <div>
+            <label for="city">City:</label>
+            <select id="city" name="city_id" required>
+                <option value="">Select a City</option>
+                
+            </select>
+        </div>
+        <div>
+            <label for="postal_code">Postal Code:</label>
+            <input type="text" id="postal_code" name="postal_code" required>
+        </div>
+        <button type="submit">Confirm Order</button>
+    </form>
+       </div>
+   </div>
+   <script src = "script.js"></script>
+</body>

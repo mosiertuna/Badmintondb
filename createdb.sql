@@ -1,4 +1,3 @@
-
 CREATE TABLE SHIPPERS
 (
   SHIPPER_ID SERIAL PRIMARY KEY,
@@ -94,6 +93,14 @@ CREATE TABLE PRODUCTS_BRAND
   BRAND_NAME VARCHAR(30) NOT NULL
 );
 
+CREATE TABLE customer_vouchers (
+    customer_id INT NOT NULL,
+    voucher_id INT NOT NULL,
+    PRIMARY KEY (customer_id, voucher_id),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(voucher_id),
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 INSERT INTO PRODUCTS_BRAND (BRAND_NAME)
 VALUES
@@ -208,6 +215,7 @@ VALUES
   ('Bóng Cầu Lông Adidas AD-BL01', 145.00, 210, 5, 1, 'Bóng cầu lông chất lượng cao, độ bền cao, giúp tăng hiệu suất chơi.');
 
 -- Tạo dữ liệu mẫu cho bảng PRODUCTS
+
 INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Vợt Cầu Lông
@@ -327,6 +335,7 @@ VALUES
 
 
   -- Tạo dữ liệu mẫu cho bảng PRODUCTS
+
 INSERT INTO PRODUCTS (PRODUCT_NAME, UNIT_PRICE, AMOUNT, TYPE, BRAND_ID, DESCRIPTION)
 VALUES
   -- Vợt Cầu Lông
@@ -1231,31 +1240,31 @@ VALUES
 ('2024-10-08', '567 Lê Văn Sỹ, Quận 3, TP.HCM', 1, 172, 73),
 ('2024-10-15', '890 Cách Mạng Tháng 8, Quận 10, TP.HCM', 1, 187, 84),
 ('2024-10-22', '123 Nguyễn Thái Bình, Quận 1, TP.HCM', 1, 201, 95),
-('2024-10-29', '456 Lý Thường Kiệt, Quận 3, TP.HCM', 1, 218, 106),
-('2024-11-05', '789 Trần Quang Khải, Quận 5, TP.HCM', 1, 232, 117),
-('2024-11-12', '234 Cầu Giấy, Quận Bình Thạnh, TP.HCM', 1, 15, 128),
-('2024-11-19', '567 Hoàng Diệu, Quận 4, TP.HCM', 1, 31, 139),
-('2024-11-26', '890 Trần Não, Quận 2, TP.HCM', 1, 46, 150),
-('2024-12-03', '123 Phan Đình Phùng, Quận Phú Nhuận, TP.HCM', 1, 62, 161),
-('2024-12-10', '456 Đề Thám, Quận 1, TP.HCM', 1, 77, 172),
-('2024-12-17', '789 Nguyễn Trãi, Quận 5, TP.HCM', 1, 92, 183),
-('2024-12-24', '234 Lê Thị Riêng, Quận Bình Thạnh, TP.HCM', 1, 108, 194),
-('2024-12-31', '567 Nguyễn Đình Chiểu, Quận 3, TP.HCM', 1, 123, 205),
-('2025-01-07', '890 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM', 1, 138, 216),
-('2025-01-14', '123 Lê Lợi, Quận 1, TP.HCM', 1, 153, 227),
-('2025-01-21', '456 Cách Mạng Tháng Tám, Quận 3, TP.HCM', 1, 168, 238),
-('2025-01-28', '789 Nguyễn Văn Linh, Quận 7, TP.HCM', 1, 183, 242),
-('2024-11-19', '567 Điện Biên Phủ, Quận 5, TP.HCM', 1, 1, 128),
-('2024-11-26', '890 Nguyễn Huệ, Quận 1, TP.HCM', 1, 10, 139),
-('2024-12-03', '234 CMT8, Quận 3, TP.HCM', 1, 24, 150),
-('2024-12-10', '678 Phan Đình Phùng, Quận Phú Nhuận, TP.HCM', 1, 36, 161),
-('2024-12-17', '111 Lê Lai, Quận 5, TP.HCM', 1, 49, 172),
-('2024-12-24', '444 Nguyễn Thị Minh Khai, Quận 1, TP.HCM', 1, 63, 183),
-('2025-01-02', '777 Lê Hồng Phong, Quận 5, TP.HCM', 1, 75, 194),
-('2025-01-09', '222 Trần Hưng Đạo, Quận Bình Thạnh, TP.HCM', 1, 83, 205),
-('2025-01-16', '555 Lý Tự Trọng, Quận 3, TP.HCM', 1, 92, 216),
-('2025-01-23', '888 Nguyễn Văn Cừ, Quận 10, TP.HCM', 1, 102, 227),
-('2025-01-30', '333 Hai Bà Trưng, Quận 1, TP.HCM', 1, 112, 238),
+('2024-10-29', '456 Lý Thường Kiệt, Quận 3, TP.HCM', 1, 218, 86),
+('2024-11-05', '789 Trần Quang Khải, Quận 5, TP.HCM', 1, 232, 11),
+('2024-11-12', '234 Cầu Giấy, Quận Bình Thạnh, TP.HCM', 1, 15, 18),
+('2024-11-19', '567 Hoàng Diệu, Quận 4, TP.HCM', 1, 31, 13),
+('2024-11-26', '890 Trần Não, Quận 2, TP.HCM', 1, 46, 15),
+('2024-12-03', '123 Phan Đình Phùng, Quận Phú Nhuận, TP.HCM', 1, 62, 11),
+('2024-12-10', '456 Đề Thám, Quận 1, TP.HCM', 1, 77, 72),
+('2024-12-17', '789 Nguyễn Trãi, Quận 5, TP.HCM', 1, 92, 13),
+('2024-12-24', '234 Lê Thị Riêng, Quận Bình Thạnh, TP.HCM', 1, 108, 19),
+('2024-12-31', '567 Nguyễn Đình Chiểu, Quận 3, TP.HCM', 1, 123, 20),
+('2025-01-07', '890 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM', 1, 138, 16),
+('2025-01-14', '123 Lê Lợi, Quận 1, TP.HCM', 1, 153, 22),
+('2025-01-21', '456 Cách Mạng Tháng Tám, Quận 3, TP.HCM', 1, 168, 28),
+('2025-01-28', '789 Nguyễn Văn Linh, Quận 7, TP.HCM', 1, 183, 42),
+('2024-11-19', '567 Điện Biên Phủ, Quận 5, TP.HCM', 1, 1, 12),
+('2024-11-26', '890 Nguyễn Huệ, Quận 1, TP.HCM', 1, 10, 13),
+('2024-12-03', '234 CMT8, Quận 3, TP.HCM', 1, 24, 50),
+('2024-12-10', '678 Phan Đình Phùng, Quận Phú Nhuận, TP.HCM', 1, 36, 11),
+('2024-12-17', '111 Lê Lai, Quận 5, TP.HCM', 1, 49, 12),
+('2024-12-24', '444 Nguyễn Thị Minh Khai, Quận 1, TP.HCM', 1, 63, 83),
+('2025-01-02', '777 Lê Hồng Phong, Quận 5, TP.HCM', 1, 75, 14),
+('2025-01-09', '222 Trần Hưng Đạo, Quận Bình Thạnh, TP.HCM', 1, 83, 20),
+('2025-01-16', '555 Lý Tự Trọng, Quận 3, TP.HCM', 1, 92, 21),
+('2025-01-23', '888 Nguyễn Văn Cừ, Quận 10, TP.HCM', 1, 102, 76),
+('2025-01-30', '333 Hai Bà Trưng, Quận 1, TP.HCM', 1, 112, 23),
 ('2025-02-06', '666 Võ Thị Sáu, Quận 3, TP.HCM', 1, 123, 10),
 ('2025-02-13', '999 Lê Đức Thọ, Quận Gò Vấp, TP.HCM', 1, 132, 21),
 ('2025-02-20', '777 Phan Xích Long, Quận Phú Nhuận, TP.HCM', 1, 141, 32),

@@ -1,4 +1,4 @@
---cau 1--tick
+--cau 1--
 --hàm tìm sản phẩm theo tên--
 CREATE OR REPLACE FUNCTION search_product(p_name VARCHAR)
 RETURNS TABLE (
@@ -31,8 +31,8 @@ SELECT * FROM search_product('Yonex');
 
 --cau 2--tick
 --tìm sản phẩm theo giá--
-SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN 1000::MONEY AND 2000::MONEY;
---vi dụ tìm sản phẩm có giá từ 1000 đến 2000--
+SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN '1000' AND '20000';
+
 
 
 --cau 3--tick
@@ -44,8 +44,12 @@ WHERE CUSTOMERS.FULL_NAME = 'Tên Khách Hàng';
 
 --cau 4--tick
 --tra cứu tất cả sản phẩm theo tên brand nhập vào--
-DROP FUNCTION IF EXISTS select_product_brand;
+SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
+FROM PRODUCTS 
+JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID 
+WHERE products_brand.BRAND_NAME = 'Yonex';
 
+--4.2--
 CREATE OR REPLACE FUNCTION select_product_brand(p_brand_name VARCHAR)
 RETURNS TABLE (
   PRODUCT_NAME VARCHAR(10000),
@@ -67,7 +71,7 @@ SELECT * FROM select_product_brand('Yonex');
 
 
 
---cau 5--tick
+--cau 5--
 --tra cứu theo loại sản phẩm--
 CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
 RETURNS TABLE (
@@ -90,45 +94,18 @@ SELECT * FROM search_product_type(2);
 
 
 
---cau 6-- TICK
+--cau 6--
 --tra cứu thông tin khách hàng của 1 đơn hàng cụ thể--
 SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, ADDRESSES.ADDRESS, ADDRESSES.DISTRICT, CITIES.CITY_NAME
 FROM ORDERS
 JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID
 JOIN ADDRESSES ON CUSTOMERS.ADDRESS_ID = ADDRESSES.ADDRESS_ID
 JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
-WHERE ORDERS.ORDER_ID = 200;
-
---CAU6.2--TICK
-CREATE OR REPLACE FUNCTION get_customer_info_by_order(p_order_id INT)
-RETURNS TABLE (
-  full_name VARCHAR,
-  phone VARCHAR,
-  address VARCHAR,
-  district VARCHAR,
-  city_name VARCHAR
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT 
-    CUSTOMERS.FULL_NAME, 
-    CUSTOMERS.PHONE, 
-    ADDRESSES.ADDRESS, 
-    ADDRESSES.DISTRICT, 
-    CITIES.CITY_NAME
-  FROM ORDERS
-  JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID
-  JOIN ADDRESSES ON CUSTOMERS.ADDRESS_ID = ADDRESSES.ADDRESS_ID
-  JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
-  WHERE ORDERS.ORDER_ID = p_order_id;
-END;
-$$ LANGUAGE plpgsql;
-
--- Execute the function
-SELECT * FROM get_customer_info_by_order(200);
+WHERE ORDERS.ORDER_ID = 26261616;
 
 
---cau 7--tick
+
+--cau 7--
 --tra cứu thông tin sản phẩm của 1 đơn hàng cụ thể--
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, LIST.QUANTITY, 
        (PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS TOTAL_PRICE
@@ -166,6 +143,9 @@ SELECT SUM(PRODUCTS.UNIT_PRICE * LIST.QUANTITY) AS ORDER_TOTAL
 FROM LIST
 JOIN PRODUCTS ON LIST.PRODUCT_ID = PRODUCTS.PRODUCT_ID
 WHERE LIST.ORDER_ID = 24325232;
+--tổng tiền của đơn hàng đã được giảm giá--
+
+
 
 
 --cau 9--
@@ -232,8 +212,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-select * from add_customer('Nguyễn Văn A', '0123456789', 'password', 'maiojsnd@gmail.com', '123 Đường 1', 'Quận 1', 1, '700000');
-
+SELECT add_customer('Nguyễn Văn A', '0123456789', 'password', 'maiojsnd@gmail.com', '123 Đường 1', 'Quận 1', 1, '700000');
 
 --cau13--
 --xóa 1 khách hàng theo id--
@@ -284,7 +263,6 @@ JOIN VOUCHERS v ON l.product_id = v.product_id
 JOIN PRODUCTS p ON l.product_id = p.product_id
 WHERE l.order_id = 1;
 
-
 --cau16--
 --tìm BEST-SELLER theo loại sản phẩm
 SELECT p.product_name, SUM(quantity) AS total_quantity
@@ -295,6 +273,7 @@ WHERE o.status = 3 AND p.type = 0                   -- trạng thái 3 nghĩa l�
 GROUP BY p.product_id
 ORDER BY total_quantity DESC
 LIMIT 10;
+
 
 
 --cau17--
@@ -438,268 +417,19 @@ GROUP BY SHIPPERS.SHIPPER_ID, SHIPPERS.FULL_NAME;
 
 
 
-
+--cau27--
 --Lấy danh sách của sản phẩm mà số lượng tồn kho nhiều hơn, ít hơn 10 ,...--
+SELECT PRODUCT_NAME, AMOUNT
+FROM PRODUCTS
+ORDER BY AMOUNT DESC
+LIMIT 10;
+
+--cau28-- 
+--viet trigger tự cập nhập số lượng sản phẩm còn lại trong bảng customer sau khi khách hàng đặt hàng--
+CREATE OR REPLACE FUNCTION update_product_amount()
+
+
 --Tính tổng số sản phẩm còn tồn kho, giá trị tồn kho theo từng loại--
 --Lấy thông tin danh sách voucher mà khách hàng đã sử dụng--
 --Top 10 voucher được sư dụng nhiều nhất--
 --Tính tổng gía trị các voucher giảm giá trong chương trình--
-
---Hiển thị thông tin sản phẩm có số lượng tồn kho trong khoảng mong muốn--
-CREATE OR REPLACE FUNCTION get_products_by_amount_range(min_amount INT, max_amount INT)
-RETURNS TABLE (
-  product_id INT,
-  product_name VARCHAR,
-  unit_price MONEY,
-  amount INT,
-  type INT,
-  brand_id INT,
-  description VARCHAR
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT 
-    PRODUCTS.PRODUCT_ID,
-    PRODUCTS.PRODUCT_NAME,
-    PRODUCTS.UNIT_PRICE,
-    PRODUCTS.AMOUNT,
-    PRODUCTS.TYPE,
-    PRODUCTS.BRAND_ID,
-    PRODUCTS.DESCRIPTION
-  FROM PRODUCTS
-  WHERE PRODUCTS.AMOUNT BETWEEN min_amount AND max_amount;
-END;
-$$ LANGUAGE plpgsql;
-
--- Execute the function
-SELECT * FROM get_products_by_amount_range(10, 15);
-
---sắp xêp nhãn hàng theo số lượng tồn kho--
-CREATE OR REPLACE FUNCTION get_sorted_brand_inventory()
-RETURNS TABLE (
-  brand_id INT,
-  brand_name VARCHAR,
-  total_amount BIGINT
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT 
-    pb.BRAND_ID,
-    pb.BRAND_NAME,
-    SUM(p.AMOUNT) AS total_amount
-  FROM 
-    PRODUCTS p
-  JOIN 
-    PRODUCTS_BRAND pb ON p.BRAND_ID = pb.BRAND_ID
-  GROUP BY 
-    pb.BRAND_ID, pb.BRAND_NAME
-  ORDER BY 
-    total_amount DESC;
-END;
-$$ LANGUAGE plpgsql;
-
--- Execute the function
-SELECT * FROM get_sorted_brand_inventory();
-
-
---tính số lần đặt hàng của mỗi khach hàng--
-CREATE OR REPLACE FUNCTION get_order_count_per_customer()
-RETURNS TABLE (
-  customer_id INT,
-  full_name VARCHAR,
-  order_count BIGINT
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT 
-    C.CUSTOMER_ID,
-    C.FULL_NAME,
-    COUNT(O.ORDER_ID) AS order_count
-  FROM 
-    CUSTOMERS C
-  LEFT JOIN 
-    ORDERS O ON C.CUSTOMER_ID = O.CUSTOMER_ID
-  GROUP BY 
-    C.CUSTOMER_ID, C.FULL_NAME
-  ORDER BY 
-    order_count DESC;
-END;
-$$ LANGUAGE plpgsql;
-
--- Execute the function
-SELECT * FROM get_order_count_per_customer();
-
---Tìm top 10 khách hàng mua nhiều nhất trong tháng, năm cụ thể--
-CREATE OR REPLACE FUNCTION get_top_customers_by_month_year(month_val INT, year_val INT)
-RETURNS TABLE (
-  customer_id INT,
-  full_name VARCHAR,
-  phone VARCHAR,
-  email VARCHAR,
-  address VARCHAR,
-  district VARCHAR,
-  city_name VARCHAR,
-  postal_code VARCHAR,
-  order_count BIGINT
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    c.customer_id,
-    c.full_name,
-    c.phone,
-    c.email,
-    a.address,
-    a.district,
-    ci.city_name,
-    a.postal_code,
-    COUNT(o.order_id) AS order_count
-  FROM 
-    CUSTOMERS c
-  JOIN 
-    ORDERS o ON c.customer_id = o.customer_id
-  JOIN 
-    ADDRESSES a ON o.address = a.address
-  JOIN 
-    CITIES ci ON a.city_id = ci.city_id
-  WHERE 
-    EXTRACT(MONTH FROM o.time) = month_val
-    AND EXTRACT(YEAR FROM o.time) = year_val
-    AND o.status = 1
-  GROUP BY 
-    c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code
-  ORDER BY 
-    order_count DESC
-  LIMIT 10;
-END;
-$$ LANGUAGE plpgsql;
-SELECT * FROM get_top_customers_by_month_year(8, 2024);
-
---tìm khách hàng mua nhiều nhất năm cụ thể--
-CREATE OR REPLACE FUNCTION get_top_customers_by_year(year_val INT)
-RETURNS TABLE (
-  customer_id INT,
-  full_name VARCHAR,
-  phone VARCHAR,
-  email VARCHAR,
-  address VARCHAR,
-  district VARCHAR,
-  city_name VARCHAR,
-  postal_code VARCHAR,
-  order_count BIGINT
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    c.customer_id,
-    c.full_name,
-    c.phone,
-    c.email,
-    a.address,
-    a.district,
-    ci.city_name,
-    a.postal_code,
-    COUNT(o.order_id) AS order_count
-  FROM 
-    CUSTOMERS c
-  JOIN 
-    ORDERS o ON c.customer_id = o.customer_id
-  JOIN 
-    ADDRESSES a ON o.address = a.address
-  JOIN 
-    CITIES ci ON a.city_id = ci.city_id
-  WHERE 
-    EXTRACT(YEAR FROM o.time) = year_val
-    AND o.status = 1
-  GROUP BY 
-    c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code
-  ORDER BY 
-    order_count DESC
-  LIMIT 10;
-END;
-$$ LANGUAGE plpgsql;
-SELECT * FROM get_top_customers_by_year(2024);
-
---tìm top 10 khách hàng mua nhiều nhất trong ngày cụ thể--
-CREATE OR REPLACE FUNCTION get_top_customers_by_day(day_val DATE)
-RETURNS TABLE (
-  customer_id INT,
-  full_name VARCHAR,
-  phone VARCHAR,
-  email VARCHAR,
-  address VARCHAR,
-  district VARCHAR,
-  city_name VARCHAR,
-  postal_code VARCHAR,
-  order_count BIGINT
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    c.customer_id,
-    c.full_name,
-    c.phone,
-    c.email,
-    a.address,
-    a.district,
-    ci.city_name,
-    a.postal_code,
-    COUNT(o.order_id) AS order_count
-  FROM 
-    CUSTOMERS c
-  JOIN 
-    ORDERS o ON c.customer_id = o.customer_id
-  JOIN 
-    ADDRESSES a ON o.address = a.address
-  JOIN 
-    CITIES ci ON a.city_id = ci.city_id
-  WHERE 
-    o.time >= day_val
-    AND o.time < day_val + INTERVAL '1 DAY'
-    AND o.status = 1
-  GROUP BY 
-    c.customer_id, c.full_name, c.phone, c.email, a.address, a.district, ci.city_name, a.postal_code
-  ORDER BY 
-    order_count DESC
-  LIMIT 10;
-END;
-$$ LANGUAGE plpgsql;
-SELECT * FROM get_top_customers_by_day('2026-09-15');
-
-
---tìm khách hàng có số lần mua nhiều nhất trong thành phố cụ thể--
-CREATE OR REPLACE FUNCTION get_top_customer_by_city(p_city_name VARCHAR)
-RETURNS TABLE (
-  customer_id INT,
-  full_name VARCHAR,
-  phone VARCHAR,
-  email VARCHAR,
-  total_orders BIGINT
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    c.customer_id,
-    c.full_name,
-    c.phone,
-    c.email,
-    COUNT(o.order_id) AS total_orders
-  FROM 
-    CUSTOMERS c
-  JOIN 
-    ORDERS o ON c.customer_id = o.customer_id
-  JOIN 
-    ADDRESSES a ON o.address = a.address
-  JOIN 
-    CITIES ci ON a.city_id = ci.city_id
-  WHERE 
-    ci.city_name = p_city_name
-    AND o.status = 3
-  GROUP BY 
-    c.customer_id, c.full_name, c.phone, c.email
-  ORDER BY 
-    total_orders DESC
-  LIMIT 1;
-END;
-$$ LANGUAGE plpgsql;
-SELECT * FROM get_top_customer_by_city('Hồ Chí Minh');
