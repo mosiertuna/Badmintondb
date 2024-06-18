@@ -2,6 +2,7 @@ const url = 'http://localhost:8081/cart.html/';
 var dat = [];
 var vdat = [];
 var curr_v = [];
+var cities = [];
 var total = 0;
 var changeColor = 0;
 document.getElementById("home").addEventListener('click', () => {
@@ -11,6 +12,15 @@ var customer = null;
 var order = null;
 checkCookie();
 update_page();
+getCities();
+
+function setCookie(cname,cvalue,exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
 function checkCookie() {
     let user = getCookie("user");
             let ord = getCookie("order")
@@ -146,6 +156,25 @@ async function updateCart(qtt, id) {
 
         }
 
+async function getCities() {
+            const res = await fetch(`${url}getCities`, {
+                    method: 'GET'
+            });
+            const data = await res.json();
+            cities = data.info;
+            update_cities();
+            }
+function update_cities(){
+           const cList = document.getElementById("city");
+           cList.innerHTML = '<option value="">Select a City</option>';
+           if (cities != null) {
+            for (let i = 0; i < cities.length; ++i) {
+               
+                cList.innerHTML += `
+                                    <option value = "${cities[i].city_id}">${cities[i].city_name}</option>`;
+            }
+        }
+}
 function update_voucher_list() {
             const vList = document.getElementById("vouchers_list");
             vList.innerHTML = "";  // Clear previous items
@@ -225,4 +254,45 @@ function validateForm() {
 
     return isValid;
 }
-        
+
+
+
+document.getElementById('confirmOrderForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+
+
+    const params = new URLSearchParams({
+        customer_id: customer,
+        full_name: formData.get('full_name'),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        address: formData.get('address'),
+        district: formData.get('district'),
+        city_id: formData.get('city_id'),
+        postal_code: formData.get('postal_code'),
+        order_id: order
+    });
+
+    fetch(`${url}confirmOrder?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Order confirmed successfully!');
+            setCookie("order", null, 30);
+            
+        } else {
+            alert('Error confirming order: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});

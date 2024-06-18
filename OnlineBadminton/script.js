@@ -47,7 +47,6 @@ document.getElementById('brand_name').addEventListener('change', debouncedSearch
 
 function update_page(){
     curr_page.textContent = `Page ${page} of ${max_page}`;
-<<<<<<< HEAD
     if(page == max_page){
         nextBtn.classList.remove("display_buttons");
         nextBtn.classList.add("hide_buttons");
@@ -88,24 +87,6 @@ function update_page(){
                 <input class="qt_form" id="qt${dat[i].product_id}" type="number" min="0" max="999" value="0" />
                 <button class="update_button" id="u${dat[i].product_id}">Order</button>
             </div>
-=======
-    nextBtn.classList.toggle("hide_buttons", page == max_page);
-    prevBtn.classList.toggle("hide_buttons", page == 1 || max_page == 1);
-    prevBtn.classList.toggle("display_buttons", page != 1 && max_page != 1);
-
-    document.getElementById("items_list").innerHTML="";
-
-    for(i = per_page*page - per_page; i<per_page*page&&i<dat.length; ++i){
-        document.getElementById("items_list").innerHTML += `<div class="items">ID: ${dat[i].product_id}
-        <br>Name: ${dat[i].product_name}</br>
-        <br>Unit price: ${dat[i].unit_price}</br>
-        <br>Description: ${dat[i].description}</br>
-        <div class="item_quantity">
-        <h3>Quantity</h3>
-        <input type="number" id="quantity" min="0" max="999" value = 0 />
-        <button>Order</button>
-        </div>
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
         </div>`;
         
         // Append the item HTML to the items list

@@ -10,6 +10,8 @@
 <body>
    <div id="Header" class="header">
         <i class="fa-solid fa-house" id="home" style="font-size: 48px; float: right; padding: 20px; transition: 0.5s;"></i>
+        <a href="http://localhost:8081/Orders/orders.html" >ORDERS</a>
+    
    </div>
    <div id="Body">
     <div id = items_list class="items_container">
@@ -17,7 +19,7 @@
     <div id = total_price style="text-align: right;"></div>
     <div id = vouchers_list class="items_container">
     </div>
-    <form action="/submitCustomer" method="post" onsubmit="return validateForm()">
+    <form id="confirmOrderForm">
         <div>
             <label for="full_name">Full Name:</label>
             <input type="text" id="full_name" name="full_name" required>
@@ -25,6 +27,7 @@
         <div>
             <label for="phone">Phone:</label>
             <input type="text" id="phone" name="phone" required>
+            <div class="error" id="phoneError"></div>
         </div>
         <div>
             <label for="email">Email:</label>
@@ -42,12 +45,12 @@
             <label for="city">City:</label>
             <select id="city" name="city_id" required>
                 <option value="">Select a City</option>
-                
             </select>
         </div>
         <div>
             <label for="postal_code">Postal Code:</label>
             <input type="text" id="postal_code" name="postal_code" required>
+            <div class="error" id="postalCodeError"></div>
         </div>
         <button type="submit">Confirm Order</button>
     </form>

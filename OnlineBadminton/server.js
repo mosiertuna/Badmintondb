@@ -3,6 +3,8 @@ const path = require('path');
 const app = express();
 const port = 8081;
 const { Client, Query } = require('pg');
+const { query, validationResult } = require('express-validator');
+
 const client = new Client({
 	user: 'postgres',
 	password: '1',
@@ -18,7 +20,6 @@ app.use(express.static(__dirname));
 
 app.get('/getItemList', (req, res) => {
 //TO_DO: VALIDATE INPUT, DATA LAYER PROTECTION
-<<<<<<< HEAD
     var query = `SELECT * FROM public."products" WHERE 1=1`;
     const search_name = req.query.search_query;
     const price_range = req.query.Price_range;
@@ -43,10 +44,6 @@ app.get('/getItemList', (req, res) => {
     }
     console.log(query);
     client.query(query, (err, result) => {
-=======
-
-    client.query(`SELECT * FROM public."products" `, (err, result) => {
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
         if(err) console.log("error!");
         res.status(200).json({info: result.rows, maxpage: result.rowCount}); 
     })
@@ -130,12 +127,28 @@ app.listen(port, () => {
 app.get('/cart.html/getVouchers', (req, res) => {
     const user_id = req.query.customer_id;
     const oid = req.query.order_id;
-    client.query(`SELECT v.voucher_id,v.name, v.percent_off, p.product_name 
-                    FROM public."vouchers" v 
-                    JOIN public."customer_vouchers" cv ON cv.voucher_id = v.voucher_id
-                    JOIN public."list" l ON v.product_id = l.product_id
-                    JOIN public."products" p ON p.product_id = v.product_id
-                    WHERE cv.customer_id = ${user_id} AND l.order_id = ${oid}`, (err, result) => {
+    client.query(`SELECT 
+    v.voucher_id,
+    v.name,
+    v.percent_off,
+    p.product_name
+FROM 
+    public."vouchers" v 
+JOIN 
+    public."customer_vouchers" cv ON cv.voucher_id = v.voucher_id
+JOIN 
+    public."products" p ON p.product_id = v.product_id
+JOIN 
+    public."list" l ON l.product_id = v.product_id 
+LEFT JOIN 
+    public."discount" d ON d.voucher_id = v.voucher_id
+LEFT JOIN 
+    public."orders" o ON d.order_id = o.order_id AND o.customer_id = 1
+WHERE 
+    cv.customer_id = ${user_id}
+    AND l.order_id = ${oid} 
+    AND (o.order_id IS NULL OR o.status <= 0);
+`, (err, result) => {
         if (err) {
             console.log("error!");
             res.status(500).json({ error: "Database query failed" });
@@ -184,7 +197,7 @@ app.get('/cart.html/selectVouchers', async(req, res) =>{
 })
 
 app.get('/cart.html/getCities', (req, res) => {
-    client.query(`SELECT * FROM UPDATE_CART(${user_id}, ${oid}, ${pid}, ${q},1)`, (err, result) => {
+    client.query(`SELECT * FROM public."cities"`, (err, result) => {
         if (err) {
             console.log("error!");
             res.status(500).json({ error: "Database query failed" });
@@ -193,4 +206,97 @@ app.get('/cart.html/getCities', (req, res) => {
             res.status(200).json({ info: result.rows });
         }
     });
+});
+
+app.get('/cart.html/confirmOrder', [
+    query('customer_id').isInt().withMessage('Customer ID must be an integer'),
+    query('full_name').isLength({ max: 40 }).withMessage('Full name must be at most 40 characters long'),
+    query('phone').matches(/^[0-9]{10}$/).withMessage('Phone number must be 10 digits'),
+    query('email').isEmail().isLength({ max: 100 }).withMessage('Email must be valid and at most 100 characters long'),
+    query('address').isLength({ max: 50 }).withMessage('Address must be at most 50 characters long'),
+    query('district').isLength({ max: 30 }).withMessage('District must be at most 30 characters long'),
+    query('city_id').isInt().withMessage('City must be a valid integer'),
+    query('postal_code').matches(/^[A-Za-z0-9]{5,10}$/).withMessage('Postal code must be 5 to 10 alphanumeric characters'),
+    query('order_id').isInt().withMessage('Order ID must be an integer')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+        customer_id, full_name, phone, email, 
+        address, district, city_id, postal_code, 
+        order_id
+    } = req.query;
+
+    const queryText = `
+        CALL confirm_order(
+            $1, $2, $3, $4, $5, $6, $7, $8, $9
+        )
+    `;
+
+    const values = [
+        customer_id, full_name, phone, email, 
+        address, district, city_id, postal_code, 
+        order_id
+    ];
+
+    try {
+        await client.query('BEGIN');
+        await client.query(queryText, values);
+        await client.query('COMMIT');
+        res.status(200).json({ success: true, message: 'Order confirmed successfully' });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error confirming order:', error);
+        res.status(500).json({ success: false, message: 'Error confirming order' });
+    }
+});
+
+app.get('/orders.html/getOrders', async (req, res) => {
+    const user_id = req.query.customer_id;
+    client.query(`SELECT * FROM public."orders" o JOIN public."cities" c ON o.city_id = c.city_id WHERE customer_id = ${user_id}`, (err, result) => {
+        if (err) {
+            console.log("error!");
+            res.status(500).json({ error: "Database query failed" });
+        } else {
+            console.log(result.rows);
+            res.status(200).json({ info: result.rows });
+        }
+    });
+});
+
+app.get('/orders.html/cancelOrder', async (req, res) => {
+    const oid = req.query.order_id;
+    console.log(oid)
+    client.query(`UPDATE public."orders" SET status = 4 WHERE order_id = ${oid}`, (err, result) => {
+        if (err) {
+            console.log("error!");
+            res.status(500).json({ error: "Database query failed" });
+        } else {
+            
+            res.status(200).json({ info: 'success' });
+        }
+    });
+});
+
+
+app.get('/orders.html/getCart', async (req, res) => {
+    //TO_DO: VALIDATE INPUT, DATA LAYER PROTECTION
+    const oid = req.query.order_id;
+
+    try {
+        // Execute both queries and wait for their completion
+        const listResult = await client.query(`SELECT p.*, l.quantity, l.quantity * p.unit_price AS total FROM public."list" l JOIN public."products" p ON l.product_id = p.product_id WHERE l.order_id = ${oid}`);
+        const totalResult = await client.query(`SELECT total_price FROM public."orders" WHERE order_id = ${oid}`);
+
+        const list = listResult.rows;
+        const total = totalResult.rows;
+    
+        res.status(200).json({ info: list, total_price: total });
+    } catch (err) {
+        console.error("Database query error:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });

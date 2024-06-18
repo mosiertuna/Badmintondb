@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
-
---nếu khách hàng chưa có thì tạo mới, nếu đơn hàng chưa có thì tạo mới, nếu sản phẩm chưa có thì tạo mới--
-
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 CREATE OR REPLACE FUNCTION UPDATE_CART(
     CUS_ID IN INT,
     ORD_ID IN INT,
     PRD_ID IN INT, 
-<<<<<<< HEAD
     QTT INT,
     T INT
-=======
-    QTT INT
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 )
 RETURNS TABLE (
     NEW_CUSTOMER_ID INT,
@@ -22,15 +12,9 @@ RETURNS TABLE (
 )
 AS $$
 BEGIN
-<<<<<<< HEAD
     IF QTT > 0 AND QTT <= (SELECT amount FROM public."products" p WHERE p.product_id = PRD_ID) THEN
     -- Check if CUS_ID is NULL
     IF CUS_ID IS NULL OR NOT EXISTS (SELECT 1 FROM public."customers" c WHERE c.customer_id = CUS_ID)  THEN
-=======
-    IF QTT > 0 THEN
-    -- Check if CUS_ID is NULL
-    IF CUS_ID IS NULL THEN
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
         -- Insert a new customer with empty fields
         INSERT INTO public."customers" (full_name, phone, email) VALUES ('','','');
         -- Retrieve the generated CUS_ID
@@ -38,15 +22,9 @@ BEGIN
     END IF;
 
     -- Check if ORD_ID is NULL
-<<<<<<< HEAD
     IF ORD_ID IS NULL OR NOT EXISTS (SELECT 1 FROM public."orders" c WHERE c.order_id = ORD_ID) THEN
         -- Insert a new order with initial state
         INSERT INTO public."orders" (total_price,status,customer_id) VALUES (0,0,CUS_ID);
-=======
-    IF ORD_ID IS NULL THEN
-        -- Insert a new order with initial state
-        INSERT INTO public."orders" (status,customer_id) VALUES (0,CUS_ID);
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
         -- Retrieve the generated ORD_ID
         SELECT currval(pg_get_serial_sequence('public."orders"', 'order_id')) INTO ORD_ID;
     END IF;
@@ -55,11 +33,7 @@ BEGIN
     IF EXISTS (SELECT 1 FROM public."list" l WHERE l.order_id = ORD_ID AND l.product_id = PRD_ID) THEN
         -- Update the quantity for the existing entry
         UPDATE public."list" l
-<<<<<<< HEAD
-        SET quantity = quantity*T + QTT
-=======
-        SET quantity = QTT
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+        SET quantity = quantity*T + QTT 
         WHERE l.order_id = ORD_ID AND l.product_id = PRD_ID;
     ELSE
         -- Insert a new entry into the list
@@ -67,7 +41,6 @@ BEGIN
         VALUES (ORD_ID, PRD_ID, QTT);
     END IF;
     -- Return the customer and order IDs
-<<<<<<< HEAD
     RETURN QUERY SELECT CUS_ID as cid, ORD_ID as oid, PRD_ID as pid;
     ELSIF QTT <= 0 THEN
        IF T = 0 THEN 
@@ -106,13 +79,62 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-=======
-    RETURN QUERY SELECT CUS_ID, ORD_ID , PRD_ID ;
 
+CREATE OR REPLACE PROCEDURE confirm_order(
+    p_customer_id INT,
+    p_full_name VARCHAR,
+    p_phone VARCHAR,
+    p_email VARCHAR,
+    p_address VARCHAR,
+    p_district VARCHAR,
+    p_city_id INT,
+    p_postal_code VARCHAR,
+    p_order_id INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_address_id INT;
+BEGIN
+   
+    UPDATE customers
+    SET full_name = p_full_name,
+        phone = p_phone,
+        email = p_email
+    WHERE customer_id = p_customer_id;
+
+    -- Check if the address already exists for the customer
+    SELECT address_id INTO v_address_id
+    FROM addresses
+    WHERE address = p_address
+      AND district = p_district
+      AND city_id = p_city_id
+      AND postal_code = p_postal_code
+      AND customer_id = p_customer_id;
+
+    -- If the address does not exist, insert it
+    IF NOT FOUND THEN
+        INSERT INTO addresses (address, district, customer_id, city_id, postal_code)
+        VALUES (p_address, p_district, p_customer_id, p_city_id, p_postal_code)
+        RETURNING address_id INTO v_address_id;
+    ELSE
+        -- If the address exists, update it (you may adjust or remove this logic if not needed)
+        UPDATE addresses
+        SET address = p_address,
+            district = p_district,
+            city_id = p_city_id,
+            postal_code = p_postal_code
+        WHERE address_id = v_address_id;
     END IF;
+
+    -- Update the order's address, district, and city_id
+    UPDATE orders
+    SET address = p_address,
+        district = p_district,
+        city_id = p_city_id,
+        status = 1
+    WHERE order_id = p_order_id;
+
+
 END;
-$$
-LANGUAGE 'plpgsql';
-
-
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+$$;
