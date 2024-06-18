@@ -1,15 +1,14 @@
-<<<<<<< HEAD
+
 --tìm sản phẩm theo tên--
-<<<<<<< HEAD
 SELECT * FROM PRODUCTS WHERE PRODUCT_NAME LIKE '%%%yon%%';
 
 --tìm sản phẩm theo giá--
 SELECT * FROM PRODUCTS WHERE UNIT_PRICE::numeric BETWEEN 1000000 AND 2000000;
-=======
+
 DO
 $$
 DECLARE ProductName VARCHAR(10000);
-=======
+
 --cau 1--
 --hàm tìm sản phẩm theo tên--
 CREATE OR REPLACE FUNCTION search_product(p_name VARCHAR)
@@ -22,7 +21,6 @@ RETURNS TABLE (
   BRAND_NAME VARCHAR(30),
   DESCRIPTION VARCHAR(10000000)
 ) AS $$
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
 BEGIN
   RETURN QUERY EXECUTE format('
     SELECT 
@@ -53,11 +51,10 @@ VALUES
   (1, 2, 123), -- Sản phẩm 1 với số lượng 2 cho khách hàng 123
   (2, 1, 123), -- Sản phẩm 2 với số lượng 1 cho khách hàng 123
   (3, 5, 123); -- Sản phẩm 3 với số lượng 5 cho khách hàng 123
->>>>>>> 08956df7959f5c9593786b8cfb64c61819194738
-=======
+
 SELECT * FROM PRODUCTS WHERE UNIT_PRICE BETWEEN 1000::MONEY AND 2000::MONEY;
 --vi dụ tìm sản phẩm có giá từ 1000 đến 2000--
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+
 
 
 --cau 3--
@@ -69,18 +66,16 @@ WHERE CUSTOMERS.FULL_NAME = 'Tên Khách Hàng';
 
 --cau 4--
 --tra cứu tất cả sản phẩm theo tên brand nhập vào--
-<<<<<<< HEAD
-<<<<<<< HEAD
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
-=======
+
 SELECT PRODUCTS.NAME, PRODUCTS.UNIT_PRICE, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
->>>>>>> 08956df7959f5c9593786b8cfb64c61819194738
+
 FROM PRODUCTS 
 JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID 
 WHERE products_brand.BRAND_NAME = 'Yonex';
-=======
+
 DROP FUNCTION IF EXISTS select_product_brand;
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+
 
 CREATE OR REPLACE FUNCTION select_product_brand(p_brand_name VARCHAR)
 RETURNS TABLE (
@@ -105,22 +100,15 @@ SELECT * FROM select_product_brand('Yonex');
 
 --cau 5--
 --tra cứu theo loại sản phẩm--
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 SELECT PRODUCTS.PRODUCT_NAME, PRODUCTS.UNIT_PRICE, PRODUCTS.AMOUNT, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
-=======
 SELECT PRODUCTS.NAME, PRODUCTS.UNIT_PRICE, PRODUCTS.AMOUNT, products_brand.BRAND_NAME, PRODUCTS.DESCRIPTION
->>>>>>> 08956df7959f5c9593786b8cfb64c61819194738
 FROM PRODUCTS 
 JOIN products_brand ON PRODUCTS.BRAND_ID = products_brand.BRAND_ID
 WHERE PRODUCTS.TYPE = 1;
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 08956df7959f5c9593786b8cfb64c61819194738
-=======
 CREATE OR REPLACE FUNCTION search_product_type(p_type INT)
 RETURNS TABLE (
   PRODUCT_NAME VARCHAR(10000),
@@ -142,22 +130,16 @@ SELECT * FROM search_product_type(2);
 
 
 
---cau 6--
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
---tra cứu thông tin khách hàng của 1 đơn hàng cụ thể--
+
 SELECT CUSTOMERS.FULL_NAME, CUSTOMERS.PHONE, ADDRESSES.ADDRESS, ADDRESSES.DISTRICT, CITIES.CITY_NAME
 FROM ORDERS
 JOIN CUSTOMERS ON ORDERS.CUSTOMER_ID = CUSTOMERS.CUSTOMER_ID
-<<<<<<< HEAD
-<<<<<<< HEAD
 WHERE ORDERS.ORDER_ID = 4;
-=======
 WHERE ORDERS.ORDER_ID = '26261616';
-=======
 JOIN ADDRESSES ON CUSTOMERS.ADDRESS_ID = ADDRESSES.ADDRESS_ID
 JOIN CITIES ON ADDRESSES.CITY_ID = CITIES.CITY_ID
 WHERE ORDERS.ORDER_ID = 26261616;
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+
 
 
 
@@ -217,11 +199,9 @@ FOR EACH ROW EXECUTE PROCEDURE delete_voucher_amount();
 
 --cau 12--
 --tạo 1 khách hàng mới--   
-<<<<<<< HEAD
+
 INSERT INTO CUSTOMERS (FULL_NAME, PHONE, EMAIL, ADDRESS)
 VALUES ('Tên Khách Hàng', '020161', 'Email', 'Địa Chỉ');
->>>>>>> 08956df7959f5c9593786b8cfb64c61819194738
-=======
 CREATE OR REPLACE FUNCTION add_customer(
     p_full_name VARCHAR(40),
     p_phone VARCHAR(10),
@@ -239,7 +219,7 @@ BEGIN
     INSERT INTO ADDRESSES (ADDRESS, DISTRICT, CITY_ID, POSTAL_CODE)
     VALUES (p_address, p_district, p_city_id, p_postal_code)
     RETURNING ADDRESS_ID INTO new_address_id;
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+
 
     -- Thêm một khách hàng mới với ADDRESS_ID mới nhất
     INSERT INTO CUSTOMERS (FULL_NAME, PHONE, PASS_WORD, EMAIL, ADDRESS_ID)
@@ -275,10 +255,9 @@ select * from  delete_customer(15);
 
 --cau 14--
 --tạo 1 vouchers mới--
-<<<<<<< HEAD
+
 INSERT INTO VOUCHERS (NAME, DAY_START, DAY_OFF, PERCENT_OFF, AMOUNT, PRODUCT_ID)
 VALUES ('Tên Voucher', '1/6/2024', '5/6/2024', '30', '100','267');
-<<<<<<< HEAD
        
 --tra cứu các voucher có thể sử dụng cho 1 đơn hàng cụ thể
 SELECT v.name,v.percent_off,v.product_id
@@ -307,8 +286,6 @@ GROUP BY c.customer_id, c.full_name
 HAVING COUNT(o.order_id) > 3;
 
 
-=======
-=======
 CREATE OR REPLACE FUNCTION insert_voucher(
     p_name VARCHAR,
     p_day_start DATE,
@@ -322,7 +299,7 @@ BEGIN
     VALUES (p_name, p_day_start, p_day_off, p_percent_off, p_amount, p_product_id);
 END;
 $$ LANGUAGE plpgsql;
->>>>>>> 58322ecaff84e37d5d9a8252e4574354886c239c
+
 
 SELECT insert_voucher('Tên Voucher', '2024-06-01', '2024-06-05', 30, 100, 17);
 
@@ -494,4 +471,4 @@ GROUP BY SHIPPERS.SHIPPER_ID, SHIPPERS.FULL_NAME;
 --Lấy thông tin danh sách voucher mà khách hàng đã sử dụng--
 --Top 10 voucher được sư dụng nhiều nhất--
 --Tính tổng gía trị các voucher giảm giá trong chương trình--
->>>>>>> 08956df7959f5c9593786b8cfb64c61819194738
+
