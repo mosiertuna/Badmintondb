@@ -8,7 +8,7 @@ const client = new Client({
 	password: '12345',
 	host: 'localhost',
 	port: '5432',
-	database: 'BADMINTON',
+	database: 'Badmintondb',
 });
 var small_url = "";
 
