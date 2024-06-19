@@ -7,10 +7,10 @@ const { query, validationResult } = require('express-validator');
 
 const client = new Client({
 	user: 'postgres',
-	password: '1',
+	password: '12345',
 	host: 'localhost',
 	port: '5432',
-	database: 'Store',
+	database: 'Badmintondb',
 });
 var small_url = "";
 
