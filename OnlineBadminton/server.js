@@ -270,15 +270,18 @@ app.get('/orders.html/getOrders', async (req, res) => {
 app.get('/orders.html/cancelOrder', async (req, res) => {
     const oid = req.query.order_id;
     console.log(oid)
-    client.query(`UPDATE public."orders" SET status = 4 WHERE order_id = ${oid}`, (err, result) => {
-        if (err) {
-            console.log("error!");
-            res.status(500).json({ error: "Database query failed" });
-        } else {
-            
-            res.status(200).json({ info: 'success' });
-        }
-    });
+    try {
+        // Execute both queries and wait for their completion
+        await client.query(`UPDATE public."products" SET STATUS = 4 WHERE l.order_id = ${oid}`);
+        await client.query(`DELETE FROM public."discount" d WHERE d.order_id IN (SELECT o.order_id FROM public."orders" o WHERE status = 4 AND o.order_id = ${oid})`);
+
+    
+    
+        res.status(200).json({ info: '' });
+    } catch (err) {
+        console.error("Database query error:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 
