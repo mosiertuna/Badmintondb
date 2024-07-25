@@ -10,6 +10,7 @@ RETURNS TABLE (
     NEW_ORDER_ID INT,
     PRODUCT_ID INT
 )
+	
 AS $$
 BEGIN
     IF QTT > 0 AND QTT <= (SELECT amount FROM public."products" p WHERE p.product_id = PRD_ID) THEN
